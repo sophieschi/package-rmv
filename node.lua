@@ -52,6 +52,7 @@ function node.render()
 
             local remaining = math.floor((dep.date - now) / 60)
             local append = ""
+            local platform = ""
 
             if remaining < 0 then
                 time = "In der Vergangenheit"
@@ -78,7 +79,10 @@ function node.render()
                     append = "und wieder " .. dep.next_nice_date
                 end
             end
-
+            
+            if dep.platform ~= "" then
+                platform = " von " .. dep.platform
+            end
             stop_r, stop_g, stop_b = 1,1,1
 
             if remaining < 10 then
@@ -89,7 +93,7 @@ function node.render()
 
                 CONFIG.font:write(170, y, dep.direction, 60, stop_r,stop_g,stop_b, 1)
                 y = y + 60
-                CONFIG.font:write(170, y, time .. " von " .. dep.platform .. " " .. append , 45, 1,1,1,1)
+                CONFIG.font:write(170, y, time .. platform .. " " .. append , 45, 1,1,1,1)
                 y = y + 70
             else
                 colored:use{color = {dep.color_r, dep.color_g, dep.color_b, 1}}
