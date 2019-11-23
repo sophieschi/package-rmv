@@ -89,7 +89,8 @@ function node.render()
                 colored:use{color = {dep.color_r, dep.color_g, dep.color_b, 1}}
                 white:draw(0,y, 150,y + 100)
                 colored:deactivate()
-                CONFIG.font:write(75 - #dep.symbol*23, y+16, dep.symbol, 70, 1,1,1,1)
+                local symbol_width = CONFIG.font:width(dep.symbol, 70)
+                CONFIG.font:write(75 - symbol_width/2, y+16, dep.symbol, 70, 1,1,1,1)
 
                 CONFIG.font:write(170, y, dep.direction, 60, stop_r,stop_g,stop_b, 1)
                 y = y + 60
@@ -99,7 +100,8 @@ function node.render()
                 colored:use{color = {dep.color_r, dep.color_g, dep.color_b, 1}}
                 white:draw(50,y, 150,y + 50)
                 colored:deactivate()
-                CONFIG.font:write(100 - #dep.symbol*13, y + 5, dep.symbol, 40, 1,1,1,1)
+                local symbol_width = CONFIG.font:width(dep.symbol, 40)
+                CONFIG.font:write(100 - symbol_width/2, y + 5, dep.symbol, 40, 1,1,1,1)
                 CONFIG.font:write(170, y, time , 45, 1,1,1,1)
                 CONFIG.font:write(310, y, dep.direction, 30, stop_r,stop_g,stop_b,1)
                 y = y + 30
