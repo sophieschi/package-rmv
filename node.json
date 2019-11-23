@@ -23,7 +23,7 @@
         "default": "3016471"
     }, {
         "title": "API Key",
-        "ui_width": 25,
+        "ui_width": 12,
         "name": "key",
         "type": "string",
         "default": "5555555-555555-5555-5555-555555"
