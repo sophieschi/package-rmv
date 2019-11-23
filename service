@@ -1,0 +1,185 @@
+#!/usr/bin/env python
+import re
+import traceback
+import time
+import json
+import urllib2
+import pytz
+from datetime import datetime, timedelta
+from itertools import islice
+
+from hosted import CONFIG, NODE
+
+CONFIG.restart_on_update()
+
+minutes = re.compile("([0-9]+) min")
+exact = re.compile("([0-9]+):([0-9]+)")
+
+def current_time():
+    timezone = pytz.timezone("Europe/Berlin")
+    now = datetime.utcnow()
+    now = now.replace(tzinfo=pytz.utc)
+    now = now.astimezone(timezone)
+    now = now.replace(tzinfo=None)
+    return now
+
+def to_unixtimestamp(dt):
+    return int(time.mktime(dt.timetuple()))
+
+def regenerate():
+    now = current_time()
+
+    def from_html(h):
+        r = round(1.0 / 255 * int(h[0:2], 16), 2)
+        g = round(1.0 / 255 * int(h[2:4], 16), 2)
+        b = round(1.0 / 255 * int(h[4:6], 16), 2)
+        return r, g, b
+
+    mapping = {
+            '1': from_html('f39433'),
+            '2': from_html('00a7e7'),
+            '3': from_html('ddae8d'),
+            '4': from_html('64b445'),
+            '5': from_html('5da5b8'),
+            '6': from_html('d51317'),
+            '8': from_html('f39433'),
+            '9': from_html('a94f2b'),
+            '14': from_html('64b445'),
+            '15': from_html('5da5b8'),
+            '16': from_html('f0988f'),
+            '17': from_html('5c2483'),
+            '18': from_html('ea5b0c'),
+            '20': from_html('acb371'),
+            'AST 20': from_html('fdc300'),
+            '21': from_html('d1b122'),
+            '22': from_html('d1b122'),
+            '23': from_html('0086cd'),
+            '24': from_html('0086cd'),
+            'AST 24': from_html('fdc300'),
+            '26': from_html('adce6d'),
+            'AST 26': from_html('fdc300'),
+            '27': from_html('cd7bab'),
+            '28': from_html('5bc5f2'),
+            '30': from_html('ba0161'),
+            '33': from_html('ddae8d'),
+            '34': from_html('9097c3'),
+            'AST 35': from_html('fdc300'),
+            'AST 36': from_html('fdc300'),
+            '37': from_html('9f4c97'),
+            '38': from_html('009a93'),
+            '39': from_html('e7344c'),
+            '43': from_html('ffd500'),
+            '45': from_html('acb371'),
+            '46': from_html('516fb4'),
+            'AST 46': from_html('fdc300'),
+            '47': from_html('006f8c'),
+            '48': from_html('fab437'),
+            'N2': from_html('1d327b'),
+            'N3': from_html('1d327b'),
+            'N4': from_html('1d327b'),
+            'N5': from_html('1d327b'),
+            'N7': from_html('1d327b'),
+            'N9': from_html('1d327b'),
+            'N10': from_html('1d327b'),
+            'N11': from_html('1d327b'),
+            'N12': from_html('1d327b'),
+            'E': from_html('60b565'),
+    }
+
+
+    def parse(stop_info):
+        departures = []
+        for departure in stop_info['Departure']:
+            name = departure['name'] 
+            symbol = re.sub('Bus[- ]', '', departure['name']).strip()
+            r, g, b = mapping.get(symbol, (0,0,0))
+            direction = re.sub('(Wiesbaden[- ])', '', departure['direction'])
+            stop = re.sub('(Wiesbaden[- ])', '', departure['stop'])
+            track = departure['track'] if 'track' in departure else ""
+            scheduled = datetime.strptime(departure['date'] + ' ' + departure['time'], '%Y-%m-%d %H:%M:%S')
+            leave_time = scheduled 
+            delay = 0
+            if 'rtTime' in departure:
+                real_time = datetime.strptime(departure['date'] + ' ' + departure['rtTime'], '%Y-%m-%d %H:%M:%S')
+                leave_time = real_time
+                diff = real_time - scheduled
+                delay = int(diff.total_seconds()/60)
+
+            l = datetime.strftime(leave_time, '%H:%M')
+            #print(f"{symbol:5s} {direction:35s} {track:3s} {l:9s} +{delay}")
+            departures.append(((to_unixtimestamp(leave_time), direction), dict({
+                "direction": direction,
+                "symbol": symbol,
+                "platform": track,
+                "stop": departure['stop'],
+                "nice_date": l,
+                "date": to_unixtimestamp(leave_time),
+                "color_r": r,
+                "color_g": g,
+                "color_b": b,
+                })))
+
+        return departures
+
+    def download(stop, key):
+        url = "https://www.rmv.de/hapi/departureBoard?id={stop}&format=json&accessId={key}".format(stop=stop , key=key)
+        return urllib2.urlopen(url).read()
+
+    departures = []
+    departures.extend(parse(json.loads(download(CONFIG['stop'], CONFIG['key']))))
+
+    departures.sort()
+    departures = [info for sort_key, info in departures]
+
+    # find next run
+    for n, dep in enumerate(departures):
+        for follow in islice(departures, n+1, None):
+            if dep['platform'] == follow['platform'] and \
+                    dep['stop'] == follow['stop'] and \
+                    dep['symbol'] == follow['symbol']:
+                dep['next_date'] = follow['date']
+                dep['next_nice_date'] = follow['nice_date']
+                break
+
+    # find duplicates
+    for n, dep in enumerate(departures):
+        for follow in islice(departures, n+1, None):
+            if dep['direction'] == follow['direction'] and \
+                    dep['stop'] != follow['stop'] and \
+                    dep['symbol'] == follow['symbol'] and \
+                    abs(dep['date'] - follow['date']) < 5 * 60:
+                print "duplicate:"
+                print dep
+                print follow
+                print
+                dep['duplicate'] = True
+                break
+
+    departures = [dep for dep in departures if not 'duplicate' in dep]
+
+    # pprint(departures, width=300)
+
+    with file("departures.json", "wb") as f:
+        f.write(json.dumps(departures,ensure_ascii=False).encode("utf8"))
+
+def send_clock():
+    NODE['/clock/set'](to_unixtimestamp(current_time()))
+
+def idle(seconds):
+    end = time.time() + seconds
+    while time.time() < end:
+        send_clock()
+        time.sleep(5)
+
+def main():
+    while 1:
+        try:
+            print(CONFIG)
+            regenerate()
+            idle(30)
+        except Exception:
+            traceback.print_exc()
+            time.sleep(30)
+
+if __name__ == "__main__":
+    main()

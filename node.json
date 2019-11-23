@@ -1,0 +1,31 @@
+{
+    "name": "Live feed",
+    "permissions": {
+        "network": "Needs to fetch rmv live info"
+    },
+    "options": [{
+        "title": "Background color",
+        "ui_width": 4,
+        "name": "background_color",
+        "type": "color",
+        "default": [0,0,0,1]
+    }, {
+        "title": "Font",
+        "ui_width": 4,
+        "name": "font",
+        "type": "font",
+        "default": "silkscreen.ttf"
+    }, {
+        "title": "Stop",
+        "ui_width": 4,
+        "name": "stop",
+        "type": "string",
+        "default": "3016471"
+    }, {
+        "title": "API Key",
+        "ui_width": 25,
+        "name": "key",
+        "type": "string",
+        "default": "5555555-555555-5555-5555-555555"
+    }]
+}
