@@ -80,8 +80,15 @@ function node.render()
                 end
             end
             
-            if dep.platform ~= "" then
-                platform = " von " .. dep.platform
+            if string.match(CONFIG.stop, ',') then
+                platform = " von " .. dep.stop
+                if dep.platform ~= "" then
+                    platform = platform .. ", Hst " .. dep.platform
+                end
+            else
+                if dep.platform ~= "" then
+                    platform = " von " .. dep.platform
+                end
             end
             stop_r, stop_g, stop_b = 1,1,1
 

@@ -111,7 +111,7 @@ def regenerate():
                 "direction": direction,
                 "symbol": symbol,
                 "platform": track,
-                "stop": departure['stop'],
+                "stop": stop,
                 "nice_date": l,
                 "date": to_unixtimestamp(leave_time),
                 "color_r": r,
