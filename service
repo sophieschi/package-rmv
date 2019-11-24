@@ -126,7 +126,9 @@ def regenerate():
         return urllib2.urlopen(url).read()
 
     departures = []
-    departures.extend(parse(json.loads(download(CONFIG['stop'], CONFIG['key']))))
+
+    for stop in CONFIG['stop'].split(','):
+        departures.extend(parse(json.loads(download(stop, CONFIG['key']))))
 
     departures.sort()
     departures = [info for sort_key, info in departures]
@@ -182,9 +184,14 @@ def idle(seconds):
 def main():
     while 1:
         try:
-            print(CONFIG)
+            number_of_stops = len(CONFIG['stop'].split(','))
+            sleep_time = 86400 / ( 4500 / number_of_stops) # max 5000 API calls per day allowed, don't use them all
+
+            if sleep_time < 30:
+                sleep_time = 30
+
             regenerate()
-            idle(30)
+            idle(sleep_time)
         except Exception:
             traceback.print_exc()
             time.sleep(30)
