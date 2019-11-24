@@ -122,7 +122,7 @@ def regenerate():
         return departures
 
     def download(stop, key):
-        url = "https://www.rmv.de/hapi/departureBoard?id={stop}&format=json&accessId={key}".format(stop=stop , key=key)
+        url = "https://www.rmv.de/hapi/departureBoard?id={stop}&duration=180&maxJourneys=20&format=json&accessId={key}".format(stop=stop , key=key)
         return urllib2.urlopen(url).read()
 
     departures = []
@@ -134,7 +134,7 @@ def regenerate():
     # find next run
     for n, dep in enumerate(departures):
         for follow in islice(departures, n+1, None):
-            if dep['platform'] == follow['platform'] and \
+            if dep['direction'] == follow['direction'] and \
                     dep['stop'] == follow['stop'] and \
                     dep['symbol'] == follow['symbol']:
                 dep['next_date'] = follow['date']
