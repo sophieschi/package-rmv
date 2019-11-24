@@ -16,16 +16,18 @@
         "type": "font",
         "default": "silkscreen.ttf"
     }, {
-        "title": "Stop",
+        "title": "HAFAS stop id(s)",
         "ui_width": 4,
         "name": "stop",
         "type": "string",
-        "default": "3016471"
+        "default": "3016471",
+        "hint": "separate multiple ids by comma"
     }, {
         "title": "API Key",
         "ui_width": 12,
         "name": "key",
         "type": "string",
-        "default": "5555555-555555-5555-5555-555555"
+        "default": "5555555-555555-5555-5555-555555",
+        "hint": "RMV OpenData API key"
     }]
 }
