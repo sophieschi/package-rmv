@@ -29,70 +29,129 @@ def to_unixtimestamp(dt):
 def regenerate():
     now = current_time()
 
-    def from_html(h):
+    def from_hex(h):
         r = round(1.0 / 255 * int(h[0:2], 16), 2)
         g = round(1.0 / 255 * int(h[2:4], 16), 2)
         b = round(1.0 / 255 * int(h[4:6], 16), 2)
         return r, g, b
 
     mapping = {
-            '1': from_html('f39433'),
-            '2': from_html('00a7e7'),
-            '3': from_html('ddae8d'),
-            '4': from_html('64b445'),
-            '5': from_html('5da5b8'),
-            '6': from_html('d51317'),
-            '8': from_html('f39433'),
-            '9': from_html('a94f2b'),
-            '14': from_html('64b445'),
-            '15': from_html('5da5b8'),
-            '16': from_html('f0988f'),
-            '17': from_html('5c2483'),
-            '18': from_html('ea5b0c'),
-            '20': from_html('acb371'),
-            'AST 20': from_html('fdc300'),
-            '21': from_html('d1b122'),
-            '22': from_html('d1b122'),
-            '23': from_html('0086cd'),
-            '24': from_html('0086cd'),
-            'AST 24': from_html('fdc300'),
-            '26': from_html('adce6d'),
-            'AST 26': from_html('fdc300'),
-            '27': from_html('cd7bab'),
-            '28': from_html('5bc5f2'),
-            '30': from_html('ba0161'),
-            '33': from_html('ddae8d'),
-            '34': from_html('9097c3'),
-            'AST 35': from_html('fdc300'),
-            'AST 36': from_html('fdc300'),
-            '37': from_html('9f4c97'),
-            '38': from_html('009a93'),
-            '39': from_html('e7344c'),
-            '43': from_html('ffd500'),
-            '45': from_html('acb371'),
-            '46': from_html('516fb4'),
-            'AST 46': from_html('fdc300'),
-            '47': from_html('006f8c'),
-            '48': from_html('fab437'),
-            'N2': from_html('1d327b'),
-            'N3': from_html('1d327b'),
-            'N4': from_html('1d327b'),
-            'N5': from_html('1d327b'),
-            'N7': from_html('1d327b'),
-            'N9': from_html('1d327b'),
-            'N10': from_html('1d327b'),
-            'N11': from_html('1d327b'),
-            'N12': from_html('1d327b'),
-            'E': from_html('60b565'),
+            'ESW': {
+                '1': from_hex('f39433'),
+                '2': from_hex('00a7e7'),
+                '3': from_hex('ddae8d'),
+                '4': from_hex('64b445'),
+                '5': from_hex('5da5b8'),
+                '6': from_hex('d51317'),
+                '8': from_hex('f39433'),
+                '9': from_hex('a94f2b'),
+                '14': from_hex('64b445'),
+                '15': from_hex('5da5b8'),
+                '16': from_hex('f0988f'),
+                '17': from_hex('5c2483'),
+                '18': from_hex('ea5b0c'),
+                '20': from_hex('acb371'),
+                'AST 20': from_hex('fdc300'),
+                '21': from_hex('d1b122'),
+                '22': from_hex('d1b122'),
+                '23': from_hex('0086cd'),
+                '24': from_hex('0086cd'),
+                'AST 24': from_hex('fdc300'),
+                '26': from_hex('adce6d'),
+                'AST 26': from_hex('fdc300'),
+                '27': from_hex('cd7bab'),
+                '28': from_hex('5bc5f2'),
+                '30': from_hex('ba0161'),
+                '33': from_hex('ddae8d'),
+                '34': from_hex('9097c3'),
+                'AST 35': from_hex('fdc300'),
+                'AST 36': from_hex('fdc300'),
+                '37': from_hex('9f4c97'),
+                '38': from_hex('009a93'),
+                '39': from_hex('e7344c'),
+                '43': from_hex('ffd500'),
+                '45': from_hex('acb371'),
+                '46': from_hex('516fb4'),
+                'AST 46': from_hex('fdc300'),
+                '47': from_hex('006f8c'),
+                '48': from_hex('fab437'),
+                'N2': from_hex('1d327b'),
+                'N3': from_hex('1d327b'),
+                'N4': from_hex('1d327b'),
+                'N5': from_hex('1d327b'),
+                'N7': from_hex('1d327b'),
+                'N9': from_hex('1d327b'),
+                'N10': from_hex('1d327b'),
+                'N11': from_hex('1d327b'),
+                'N12': from_hex('1d327b'),
+                'E': from_hex('60b565'),
+            },
+            'DBR': {
+                'S1': from_hex('00a768'),
+                'S2': from_hex('00a768'),
+                'S3': from_hex('00a768'),
+                'S4': from_hex('00a768'),
+                'S5': from_hex('00a768'),
+                'S6': from_hex('00a768'),
+                'S7': from_hex('00a768'),
+                'S8': from_hex('00a768'),
+                'S9': from_hex('00a768'),
+            },
+            'MVG': {
+                '28': from_hex('f7a600'),
+                '33': from_hex('232c77'),
+                '50': from_hex('41c0f0'),
+                '51': from_hex('00649c'),
+                '52': from_hex('0098cd'),
+                '53': from_hex('a1daf8'),
+                '54': from_hex('007c4e'),
+                '55': from_hex('007c4e'),
+                '56': from_hex('ea5297'),
+                '57': from_hex('ea5297'),
+                '59': from_hex('008bd2'),
+                '6': from_hex('cb5e10'),
+                '60': from_hex('64569d'),
+                '61': from_hex('64569d'),
+                '62': from_hex('d190b6'),
+                '63': from_hex('d190b6'),
+                '64': from_hex('009090'),
+                '65': from_hex('009090'),
+                '66': from_hex('d67c13'),
+                '67': from_hex('d67c13'),
+                '68': from_hex('c00d0e'),
+                '70': from_hex('97b816'),
+                '71': from_hex('96b716'),
+                '75': from_hex('166c79'),
+                '76': from_hex('e30613'),
+                '78': from_hex('f3997b'),
+                '9': from_hex('d6d000'),
+                '90': from_hex('203889'),
+                '91': from_hex('6e5239'),
+                '92': from_hex('a85e24'),
+                '99': from_hex('c2a47a'),
+            }
     }
 
+    category = {
+            '0': "ICE",
+            '1': "Fern",
+            '2': "Regio",
+            '3': "S-Bahn",
+            '4': "U-Bahn",
+            '5': "Tram",
+            '6': "Bus",
+            }
 
     def parse(stop_info):
         departures = []
         for departure in stop_info['Departure']:
             name = departure['name'] 
-            symbol = re.sub('Bus[- ]', '', departure['name']).strip()
-            r, g, b = mapping.get(symbol, (0,0,0))
+            symbol = departure['Product']['line']
+            if symbol == "":
+                symbol = departure['name'].strip()
+            cat = departure['Product']['catCode']
+            operatorCode = departure['Product'].get('operatorCode', 'foo')
+            r, g, b = mapping[operatorCode].get(symbol, (0,0,0)) if operatorCode in mapping else (0,0,0)
             direction = re.sub('(Wiesbaden[- ])', '', departure['direction'])
             stop = re.sub('(Wiesbaden[- ])', '', departure['stop'])
             track = departure['track'] if 'track' in departure else ""
@@ -110,6 +169,7 @@ def regenerate():
             departures.append(((to_unixtimestamp(leave_time), direction), dict({
                 "direction": direction,
                 "symbol": symbol,
+                "category": cat,
                 "platform": track,
                 "stop": stop,
                 "nice_date": l,

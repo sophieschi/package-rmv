@@ -33,6 +33,14 @@ local colored = resource.create_shader[[
 ]]
 
 local fadeout = 5
+local categories = {}
+categories[0] = resource.load_image("fern.png")
+categories[1] = resource.load_image("fern.png")
+categories[2] = resource.load_image("regio.png")
+categories[3] = resource.load_image("sbahn.png")
+categories[4] = resource.load_image("ubahn.png")
+categories[5] = resource.load_image("tram.png")
+categories[6] = resource.load_image("bus.png")
 
 function node.render()
     CONFIG.background_color.clear()
@@ -93,26 +101,38 @@ function node.render()
             stop_r, stop_g, stop_b = 1,1,1
 
             if remaining < 10 then
+                categories[tonumber(dep.category)]:draw(25, y, 125, y+100)
                 colored:use{color = {dep.color_r, dep.color_g, dep.color_b, 1}}
-                white:draw(0,y, 150,y + 100)
+                white:draw(150,y, 300,y + 100)
                 colored:deactivate()
                 local symbol_width = CONFIG.font:width(dep.symbol, 70)
-                CONFIG.font:write(75 - symbol_width/2, y+16, dep.symbol, 70, 1,1,1,1)
+                if symbol_width < 150 then
+                    CONFIG.font:write(225 - symbol_width/2, y+16, dep.symbol, 70, 1,1,1,1)
+                else
+                    symbol_width = CONFIG.font:width(dep.symbol, 40)
+                    CONFIG.font:write(225 - symbol_width/2, y+30, dep.symbol, 40, 1,1,1,1)
+                end
 
-                CONFIG.font:write(170, y, dep.direction, 60, stop_r,stop_g,stop_b, 1)
+                CONFIG.font:write(320, y, dep.direction, 60, stop_r,stop_g,stop_b, 1)
                 y = y + 60
-                CONFIG.font:write(170, y, time .. platform .. " " .. append , 45, 1,1,1,1)
+                CONFIG.font:write(320, y, time .. platform .. " " .. append , 45, 1,1,1,1)
                 y = y + 70
             else
+                categories[tonumber(dep.category)]:draw(120, y, 170, y+50)
                 colored:use{color = {dep.color_r, dep.color_g, dep.color_b, 1}}
-                white:draw(50,y, 150,y + 50)
+                white:draw(200,y, 300,y + 50)
                 colored:deactivate()
                 local symbol_width = CONFIG.font:width(dep.symbol, 40)
-                CONFIG.font:write(100 - symbol_width/2, y + 5, dep.symbol, 40, 1,1,1,1)
-                CONFIG.font:write(170, y, time , 45, 1,1,1,1)
-                CONFIG.font:write(310, y, dep.direction, 30, stop_r,stop_g,stop_b,1)
+                if symbol_width < 100 then
+                    CONFIG.font:write(250 - symbol_width/2, y + 5, dep.symbol, 40, 1,1,1,1)
+                else
+                    symbol_width = CONFIG.font:width(dep.symbol, 30)
+                    CONFIG.font:write(250 - symbol_width/2, y+10, dep.symbol, 30, 1,1,1,1)
+                end
+                CONFIG.font:write(320, y, time , 45, 1,1,1,1)
+                CONFIG.font:write(460, y, dep.direction, 30, stop_r,stop_g,stop_b,1)
                 y = y + 30
-                CONFIG.font:write(310, y, append , 25, 1,1,1,1)
+                CONFIG.font:write(460, y, append , 25, 1,1,1,1)
                 y = y + 40
             end
 
