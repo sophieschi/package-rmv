@@ -23,6 +23,13 @@
         "default": "3016471",
         "hint": "separate multiple ids by comma"
     }, {
+        "title": "Removed String",
+        "ui_width": 8,
+        "name": "remove",
+        "type": "string",
+        "default": "Wiesbaden",
+        "hint": "String which is removed from stop names and destinations"
+    }, {
         "title": "API Key",
         "ui_width": 12,
         "name": "key",
