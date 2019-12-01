@@ -5,6 +5,7 @@ import time
 import json
 import urllib2
 import pytz
+import hashlib
 from datetime import datetime, timedelta
 from itertools import islice
 
@@ -14,6 +15,26 @@ CONFIG.restart_on_update()
 
 minutes = re.compile("([0-9]+) min")
 exact = re.compile("([0-9]+):([0-9]+)")
+
+def rgb2hsv(r, g, b):
+    r, g, b = r/255.0, g/255.0, b/255.0
+    mx = max(r, g, b)
+    mn = min(r, g, b)
+    df = mx-mn
+    if mx == mn:
+        h = 0
+    elif mx == r:
+        h = (60 * ((g-b)/df) + 360) % 360
+    elif mx == g:
+        h = (60 * ((b-r)/df) + 120) % 360
+    elif mx == b:
+        h = (60 * ((r-g)/df) + 240) % 360
+    if mx == 0:
+        s = 0
+    else:
+        s = df/mx
+        v = mx
+    return h, s, v
 
 def current_time():
     timezone = pytz.timezone("Europe/Berlin")
@@ -129,6 +150,27 @@ def regenerate():
                 '91': from_hex('6e5239'),
                 '92': from_hex('a85e24'),
                 '99': from_hex('c2a47a'),
+            },
+            'VGF': {
+                'U1': from_hex('00309a'),
+                'U2': from_hex('00309a'),
+                'U3': from_hex('00309a'),
+                'U4': from_hex('00309a'),
+                'U5': from_hex('00309a'),
+                'U6': from_hex('00309a'),
+                'U7': from_hex('00309a'),
+                'U8': from_hex('00309a'),
+                'U9': from_hex('00309a'),
+                '11': from_hex('f90000'),
+                '12': from_hex('f90000'),
+                '14': from_hex('f90000'),
+                '15': from_hex('f90000'),
+                '16': from_hex('f90000'),
+                '17': from_hex('f90000'),
+                '18': from_hex('f90000'),
+                '19': from_hex('f90000'),
+                '20': from_hex('f90000'),
+                '21': from_hex('f90000'),
             }
     }
 
@@ -155,11 +197,18 @@ def regenerate():
             font_r, font_g, font_b = (1, 1, 1)
             if operatorCode in mapping:
                 r, g, b = mapping[operatorCode].get(symbol, (0.1,0.1,0.1)) 
+                h, s, v = rgb2hsv(r*255, g*255, b*255)
+                if v > 0.75:
+                    font_r, font_g, font_b = (0, 0, 0)
             elif cat == '0':
                 r, g, b = (1, 1, 1)
                 font_r, font_g, font_b = from_hex('c1121c')
             else:
-                r, g, b = (0.1,0.1,0.1)
+                name_hash = hashlib.md5(name).hexdigest()
+                r, g, b = from_hex(name_hash[:6])
+                h, s, v = rgb2hsv(r*255, g*255, b*255)
+                if v > 0.75:
+                    font_r, font_g, font_b = (0, 0, 0)
             direction = re.sub('^('+remove+'[- ])', '', departure['direction'])
             stop = re.sub('^('+remove+'[- ])', '', departure['stop'])
             track = departure['track'] if 'track' in departure else ""
