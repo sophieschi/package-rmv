@@ -144,7 +144,7 @@ def regenerate():
 
     def parse(stop_info):
         departures = []
-        remove = re.escape(CONFIG['remove'])
+        remove = re.escape(CONFIG['remove'].strip())
         for departure in stop_info['Departure']:
             name = departure['name'] 
             symbol = departure['Product']['line']
@@ -153,8 +153,8 @@ def regenerate():
             cat = departure['Product']['catCode']
             operatorCode = departure['Product'].get('operatorCode', 'foo')
             r, g, b = mapping[operatorCode].get(symbol, (0.1,0.1,0.1)) if operatorCode in mapping else (0.1,0.1,0.1)
-            direction = re.sub('('+remove+'[- ])', '', departure['direction'])
-            stop = re.sub('('+remove+'[- ])', '', departure['stop'])
+            direction = re.sub('^('+remove+'[- ])', '', departure['direction'])
+            stop = re.sub('^('+remove+'[- ])', '', departure['stop'])
             track = departure['track'] if 'track' in departure else ""
             scheduled = datetime.strptime(departure['date'] + ' ' + departure['time'], '%Y-%m-%d %H:%M:%S')
             leave_time = scheduled 
