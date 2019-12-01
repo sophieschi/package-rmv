@@ -107,14 +107,14 @@ function node.render()
                 colored:deactivate()
                 local symbol_width = CONFIG.font:width(dep.symbol, 70)
                 if symbol_width < 150 then
-                    CONFIG.font:write(225 - symbol_width/2, y+16, dep.symbol, 70, 1,1,1,1)
+                    CONFIG.font:write(225 - symbol_width/2, y+16, dep.symbol, 70, dep.font_r, dep.font_g, dep.font_b,1)
                 else
                     size = 70
                     while CONFIG.font:width(dep.symbol, size) > 145 do
                         size = size - 2
                     end
                     symbol_width = CONFIG.font:width(dep.symbol, size)
-                    CONFIG.font:write(225 - symbol_width/2, y+30, dep.symbol, size, 1,1,1,1)
+                    CONFIG.font:write(225 - symbol_width/2, y+50-size/2, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
                 end
 
                 CONFIG.font:write(320, y, dep.direction, 60, stop_r,stop_g,stop_b, 1)
@@ -128,14 +128,14 @@ function node.render()
                 colored:deactivate()
                 local symbol_width = CONFIG.font:width(dep.symbol, 40)
                 if symbol_width < 100 then
-                    CONFIG.font:write(250 - symbol_width/2, y + 5, dep.symbol, 40, 1,1,1,1)
+                    CONFIG.font:write(250 - symbol_width/2, y + 5, dep.symbol, 40, dep.font_r, dep.font_g, dep.font_b,1)
                 else
                     size = 40
                     while CONFIG.font:width(dep.symbol, size) > 95 do
                         size = size - 2
                     end
                     symbol_width = CONFIG.font:width(dep.symbol, size)
-                    CONFIG.font:write(250 - symbol_width/2, y+10, dep.symbol, size, 1,1,1,1)
+                    CONFIG.font:write(250 - symbol_width/2, y+25-size/2, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
                 end
                 CONFIG.font:write(320, y, time , 45, 1,1,1,1)
                 CONFIG.font:write(460, y, dep.direction, 30, stop_r,stop_g,stop_b,1)

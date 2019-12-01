@@ -152,10 +152,12 @@ def regenerate():
                 symbol = departure['name'].strip()
             cat = departure['Product']['catCode']
             operatorCode = departure['Product'].get('operatorCode', 'foo')
+            font_r, font_g, font_b = (1, 1, 1)
             if operatorCode in mapping:
                 r, g, b = mapping[operatorCode].get(symbol, (0.1,0.1,0.1)) 
             elif cat == '0':
-                r, g, b = from_hex('c1121c')
+                r, g, b = (1, 1, 1)
+                font_r, font_g, font_b = from_hex('c1121c')
             else:
                 r, g, b = (0.1,0.1,0.1)
             direction = re.sub('^('+remove+'[- ])', '', departure['direction'])
@@ -183,6 +185,9 @@ def regenerate():
                 "color_r": r,
                 "color_g": g,
                 "color_b": b,
+                "font_r": font_r,
+                "font_g": font_g,
+                "font_b": font_b,
                 })))
 
         return departures
