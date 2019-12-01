@@ -152,7 +152,12 @@ def regenerate():
                 symbol = departure['name'].strip()
             cat = departure['Product']['catCode']
             operatorCode = departure['Product'].get('operatorCode', 'foo')
-            r, g, b = mapping[operatorCode].get(symbol, (0.1,0.1,0.1)) if operatorCode in mapping else (0.1,0.1,0.1)
+            if operatorCode in mapping:
+                r, g, b = mapping[operatorCode].get(symbol, (0.1,0.1,0.1)) 
+            elif cat == '0':
+                r, g, b = from_hex('c1121c')
+            else:
+                r, g, b = (0.1,0.1,0.1)
             direction = re.sub('^('+remove+'[- ])', '', departure['direction'])
             stop = re.sub('^('+remove+'[- ])', '', departure['stop'])
             track = departure['track'] if 'track' in departure else ""
