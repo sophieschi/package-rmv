@@ -1,16 +1,13 @@
 util.init_hosted()
 
 local json = require "json"
-local transform
 local departures = {}
+
+gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
+local transform = util.screen_transform(CONFIG.rotate)
 
 util.file_watch("departures.json", function(content)
     departures = json.decode(content)
-end)
-
-util.file_watch("config.json", function(config)
-    gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
-    transform = util.screen_transform(config.rotate)
 end)
 
 local white = resource.create_colored_texture(1,1,1,1)
