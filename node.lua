@@ -61,6 +61,7 @@ function node.render()
             local remaining = math.floor((dep.date - now) / 60)
             local append = ""
             local platform = ""
+            local x = 0
 
             if remaining < 0 then
                 time = "In der Vergangenheit"
@@ -101,46 +102,54 @@ function node.render()
             stop_r, stop_g, stop_b = 1,1,1
 
             if remaining < 10 then
-                categories[tonumber(dep.category)]:draw(25, y, 125, y+100)
+                if CONFIG.showtype then
+                    categories[tonumber(dep.category)]:draw(25, y, 125, y+100)
+                    x = 150
+                end
+
                 colored:use{color = {dep.color_r, dep.color_g, dep.color_b, 1}}
-                white:draw(150,y, 300,y + 100)
+                white:draw(x,y, 300,y + 100)
                 colored:deactivate()
                 local symbol_width = CONFIG.font:width(dep.symbol, 70)
                 if symbol_width < 150 then
-                    CONFIG.font:write(225 - symbol_width/2, y+16, dep.symbol, 70, dep.font_r, dep.font_g, dep.font_b,1)
+                    CONFIG.font:write(x + 75 - symbol_width/2, y+16, dep.symbol, 70, dep.font_r, dep.font_g, dep.font_b,1)
                 else
                     size = 70
                     while CONFIG.font:width(dep.symbol, size) > 145 do
                         size = size - 2
                     end
                     symbol_width = CONFIG.font:width(dep.symbol, size)
-                    CONFIG.font:write(225 - symbol_width/2, y+50-size/2, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
+                    CONFIG.font:write(x + 75 - symbol_width/2, y+50-size/2, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
                 end
 
-                CONFIG.font:write(320, y, dep.direction, 60, stop_r,stop_g,stop_b, 1)
+                CONFIG.font:write(x + 180, y, dep.direction, 60, stop_r,stop_g,stop_b, 1)
                 y = y + 60
-                CONFIG.font:write(320, y, time .. platform .. " " .. append , 45, 1,1,1,1)
+                CONFIG.font:write(x + 180, y, time .. platform .. " " .. append , 45, 1,1,1,1)
                 y = y + 70
             else
-                categories[tonumber(dep.category)]:draw(120, y, 170, y+50)
+                if CONFIG.showtype then
+                    categories[tonumber(dep.category)]:draw(120, y, 170, y+50)
+                    x = 200
+                end
+
                 colored:use{color = {dep.color_r, dep.color_g, dep.color_b, 1}}
-                white:draw(200,y, 300,y + 50)
+                white:draw(x,y, 300,y + 50)
                 colored:deactivate()
                 local symbol_width = CONFIG.font:width(dep.symbol, 40)
                 if symbol_width < 100 then
-                    CONFIG.font:write(250 - symbol_width/2, y + 5, dep.symbol, 40, dep.font_r, dep.font_g, dep.font_b,1)
+                    CONFIG.font:write(x + 50 - symbol_width/2, y + 5, dep.symbol, 40, dep.font_r, dep.font_g, dep.font_b,1)
                 else
                     size = 40
                     while CONFIG.font:width(dep.symbol, size) > 95 do
                         size = size - 2
                     end
                     symbol_width = CONFIG.font:width(dep.symbol, size)
-                    CONFIG.font:write(250 - symbol_width/2, y+25-size/2, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
+                    CONFIG.font:write(x + 50 - symbol_width/2, y+25-size/2, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
                 end
-                CONFIG.font:write(320, y, time , 45, 1,1,1,1)
-                CONFIG.font:write(460, y, dep.direction, 30, stop_r,stop_g,stop_b,1)
+                CONFIG.font:write(x + 120, y, time , 45, 1,1,1,1)
+                CONFIG.font:write(x + 260, y, dep.direction, 30, stop_r,stop_g,stop_b,1)
                 y = y + 30
-                CONFIG.font:write(460, y, append , 25, 1,1,1,1)
+                CONFIG.font:write(x + 260, y, append , 25, 1,1,1,1)
                 y = y + 40
             end
 
