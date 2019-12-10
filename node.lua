@@ -108,7 +108,7 @@ function node.render()
                 end
 
                 colored:use{color = {dep.color_r, dep.color_g, dep.color_b, 1}}
-                white:draw(x,y, 300,y + 100)
+                white:draw(x,y, x + 150,y + 100)
                 colored:deactivate()
                 local symbol_width = CONFIG.font:width(dep.symbol, 70)
                 if symbol_width < 150 then
@@ -133,7 +133,7 @@ function node.render()
                 end
 
                 colored:use{color = {dep.color_r, dep.color_g, dep.color_b, 1}}
-                white:draw(x,y, 300,y + 50)
+                white:draw(x,y, x + 100,y + 50)
                 colored:deactivate()
                 local symbol_width = CONFIG.font:width(dep.symbol, 40)
                 if symbol_width < 100 then
