@@ -1,17 +1,19 @@
-gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
-
 util.init_hosted()
 
 local json = require "json"
-
+local transform
 local departures = {}
 
 util.file_watch("departures.json", function(content)
     departures = json.decode(content)
 end)
 
-local white = resource.create_colored_texture(1,1,1,1)
+util.file_watch("config.json", function(config)
+    gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
+    transform = util.screen_transform(config.rotate)
+end)
 
+local white = resource.create_colored_texture(1,1,1,1)
 local base_time = N.base_time or 0
 
 util.data_mapper{
@@ -43,6 +45,7 @@ categories[5] = resource.load_image("tram.png")
 categories[6] = resource.load_image("bus.png")
 
 function node.render()
+    transform()
     CONFIG.background_color.clear()
     local now = unixnow()
     local y = 0

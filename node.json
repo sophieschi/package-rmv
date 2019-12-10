@@ -30,6 +30,19 @@
         "default": "Wiesbaden",
         "hint": "String which is removed from stop names and destinations"
     }, {
+        "title": "Screen Rotation",
+        "ui_width": 4,
+        "name": "rotate",
+        "type": "select",
+        "default": "0",
+        "hint": "Rotation of screen (clockwise)",
+        "options": [
+            [0, "0°"],
+            [90, "90°"],
+            [180, "180°"],
+            [270, "270°"]
+        ]
+    }, {
         "title": "API Key",
         "ui_width": 12,
         "name": "key",
