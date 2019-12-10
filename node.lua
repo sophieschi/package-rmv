@@ -129,27 +129,27 @@ function node.render()
             else
                 if CONFIG.showtype then
                     categories[tonumber(dep.category)]:draw(120, y, 170, y+50)
-                    x = 200
+                    x = 150
                 end
 
                 colored:use{color = {dep.color_r, dep.color_g, dep.color_b, 1}}
-                white:draw(x,y, x + 100,y + 50)
+                white:draw(x + 50,y, x + 150,y + 50)
                 colored:deactivate()
                 local symbol_width = CONFIG.font:width(dep.symbol, 40)
                 if symbol_width < 100 then
-                    CONFIG.font:write(x + 50 - symbol_width/2, y + 5, dep.symbol, 40, dep.font_r, dep.font_g, dep.font_b,1)
+                    CONFIG.font:write(x + 100 - symbol_width/2, y + 5, dep.symbol, 40, dep.font_r, dep.font_g, dep.font_b,1)
                 else
                     size = 40
                     while CONFIG.font:width(dep.symbol, size) > 95 do
                         size = size - 2
                     end
                     symbol_width = CONFIG.font:width(dep.symbol, size)
-                    CONFIG.font:write(x + 50 - symbol_width/2, y+25-size/2, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
+                    CONFIG.font:write(x + 100 - symbol_width/2, y+25-size/2, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
                 end
-                CONFIG.font:write(x + 120, y, time , 45, 1,1,1,1)
-                CONFIG.font:write(x + 260, y, dep.direction, 30, stop_r,stop_g,stop_b,1)
+                CONFIG.font:write(x + 170, y, time , 45, 1,1,1,1)
+                CONFIG.font:write(x + 310, y, dep.direction, 30, stop_r,stop_g,stop_b,1)
                 y = y + 30
-                CONFIG.font:write(x + 260, y, append , 25, 1,1,1,1)
+                CONFIG.font:write(x + 310, y, append , 25, 1,1,1,1)
                 y = y + 40
             end
 
