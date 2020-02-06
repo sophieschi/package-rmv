@@ -306,7 +306,7 @@ def main():
         try:
             request_limit = 4900
 
-            if 'requests_max' in CONFIG and CONFIG['requests_max'] <= request_limit:
+            if CONFIG['requests_max'] <= request_limit:
                 request_limit = CONFIG['requests_max']
 
             number_of_stops = len(CONFIG['stop'].split(','))
