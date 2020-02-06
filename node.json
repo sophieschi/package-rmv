@@ -55,5 +55,12 @@
         "name": "font",
         "type": "font",
         "default": "silkscreen.ttf"
+    }, {
+        "title": "Request Limit",
+        "ui_width": 4,
+        "name": "requests_max",
+        "type": "integer",
+        "default": 4500,
+        "hint": "maximum number of requests done to RMV API (per device, max 4900)"
     }]
 }

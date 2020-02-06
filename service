@@ -304,8 +304,13 @@ def idle(seconds):
 def main():
     while 1:
         try:
+            request_limit = 4900
+
+            if 'requests_max' in CONFIG and CONFIG['requests_max'] <= request_limit:
+                request_limit = CONFIG['requests_max']
+
             number_of_stops = len(CONFIG['stop'].split(','))
-            sleep_time = 86400 / ( 4500 / number_of_stops) # max 5000 API calls per day allowed, don't use them all
+            sleep_time = 86400 / ( request_limit / number_of_stops)
 
             if sleep_time < 30:
                 sleep_time = 30
