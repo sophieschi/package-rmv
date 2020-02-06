@@ -4,17 +4,12 @@
         "network": "Needs to fetch rmv live info"
     },
     "options": [{
-        "title": "Background color",
-        "ui_width": 4,
-        "name": "background_color",
-        "type": "color",
-        "default": [0,0,0,1]
-    }, {
-        "title": "Font",
-        "ui_width": 4,
-        "name": "font",
-        "type": "font",
-        "default": "silkscreen.ttf"
+        "title": "API Key",
+        "ui_width": 8,
+        "name": "key",
+        "type": "string",
+        "default": "5555555-555555-5555-5555-555555",
+        "hint": "RMV OpenData API key"
     }, {
         "title": "HAFAS stop id(s)",
         "ui_width": 4,
@@ -24,14 +19,14 @@
         "hint": "separate multiple ids by comma"
     }, {
         "title": "Removed String",
-        "ui_width": 8,
+        "ui_width": 6,
         "name": "remove",
         "type": "string",
         "default": "Wiesbaden",
         "hint": "String which is removed from stop names and destinations"
     }, {
-        "title": "Screen Rotation",
-        "ui_width": 4,
+        "title": "Rotation",
+        "ui_width": 2,
         "name": "rotate",
         "type": "select",
         "default": 0,
@@ -43,18 +38,22 @@
             [270, "270°"]
         ]
     }, {
-        "title": "API Key",
-        "ui_width": 8,
-        "name": "key",
-        "type": "string",
-        "default": "5555555-555555-5555-5555-555555",
-        "hint": "RMV OpenData API key"
-    }, {
         "title": "Show vehicle type",
         "ui_width": 4,
         "name": "showtype",
         "type": "boolean",
-        "default": true,
-        "hint": "RMV OpenData API key"
+        "default": true
+    }, {
+        "title": "Background",
+        "ui_width": 2,
+        "name": "background_color",
+        "type": "color",
+        "default": [0,0,0,1]
+    }, {
+        "title": "Font",
+        "ui_width": 6,
+        "name": "font",
+        "type": "font",
+        "default": "silkscreen.ttf"
     }]
 }
