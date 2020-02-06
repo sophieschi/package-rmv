@@ -38,7 +38,7 @@
         "ui_width": 6,
         "name": "remove",
         "type": "string",
-        "defaultTeam IT (IT)": "Wiesbaden",
+        "default": "Wiesbaden",
         "hint": "String which is removed from stop names and destinations"
     }, {
         "title": "Rotation",
