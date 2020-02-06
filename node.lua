@@ -21,7 +21,7 @@ util.data_mapper{
 }
 
 local function unixnow()
-    return base_time + sys.now()
+    return base_time + sys.now() + (CONFIG.offset * 60)
 end
 
 local colored = resource.create_shader[[
@@ -88,7 +88,7 @@ function node.render()
                     append = "und wieder " .. dep.next_nice_date
                 end
             end
-            
+
             if string.match(CONFIG.stop, ',') then
                 platform = " von " .. dep.stop
                 if dep.platform ~= "" then

@@ -60,6 +60,13 @@
         "type": "boolean",
         "default": true
     }, {
+        "title": "Time Offset",
+        "ui_width": 4,
+        "name": "offset",
+        "type": "integer",
+        "default": 0,
+        "hint": "offset to use when displaying departures (does „early fadeout“ to account for walking time to stop)"
+    }, {
         "title": "Background",
         "ui_width": 2,
         "name": "background_color",
