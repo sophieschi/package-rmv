@@ -21,7 +21,7 @@ util.data_mapper{
 }
 
 local function unixnow()
-    return base_time + sys.now() + (CONFIG.offset * 60)
+    return base_time + sys.now()
 end
 
 local colored = resource.create_shader[[
@@ -46,16 +46,17 @@ function node.render()
     CONFIG.background_color.clear()
     local now = unixnow()
     local y = 0
+    local now_for_fade = now + (CONFIG.offset * 60)
 
     for idx, dep in ipairs(departures) do
-        if dep.date > now  - fadeout then
-            if now > dep.date then
-                y = y - 130 / fadeout * (now - dep.date)
+        if dep.date > now_for_fade - fadeout then
+            if now_for_fade > dep.date then
+                y = y - 130 / fadeout * (now_for_fade - dep.date)
             end
         end
     end
     for idx, dep in ipairs(departures) do
-        if dep.date > now  - fadeout then
+        if dep.date > now_for_fade - fadeout then
             local time = dep.nice_date
 
             local remaining = math.floor((dep.date - now) / 60)
