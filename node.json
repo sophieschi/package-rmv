@@ -4,6 +4,10 @@
         "network": "Needs to fetch rmv live info"
     },
     "options": [{
+        "title": "OpenData API",
+        "type": "section",
+        "ui_width": 8
+    }, {
         "title": "API Key",
         "ui_width": 8,
         "name": "key",
@@ -11,12 +15,23 @@
         "default": "5555555-555555-5555-5555-555555",
         "hint": "RMV OpenData API key"
     }, {
-        "title": "HAFAS stop id(s)",
+        "title": "Request Limit",
         "ui_width": 4,
+        "name": "requests_max",
+        "type": "integer",
+        "default": 4900,
+        "hint": "maximum number of requests done to RMV API (per device, max 4900)"
+    }, {
+        "title": "HAFAS stop id(s)",
+        "ui_width": 12,
         "name": "stop",
         "type": "string",
         "default": "3016471",
         "hint": "separate multiple ids by comma"
+    }, {
+        "title": "Display Options",
+        "type": "section",
+        "ui_width": 8
     }, {
         "title": "Removed String",
         "ui_width": 6,
@@ -55,12 +70,5 @@
         "name": "font",
         "type": "font",
         "default": "silkscreen.ttf"
-    }, {
-        "title": "Request Limit",
-        "ui_width": 4,
-        "name": "requests_max",
-        "type": "integer",
-        "default": 4500,
-        "hint": "maximum number of requests done to RMV API (per device, max 4900)"
     }]
 }
