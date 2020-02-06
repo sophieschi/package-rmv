@@ -12,7 +12,8 @@
         "ui_width": 8,
         "name": "key",
         "type": "string",
-        "default": "5555555-555555-5555-5555-555555",
+        "default": "",
+        "placeholder": "5555555-555555-5555-5555-555555",
         "hint": "RMV OpenData API key"
     }, {
         "title": "Request Limit",
@@ -37,7 +38,7 @@
         "ui_width": 6,
         "name": "remove",
         "type": "string",
-        "default": "Wiesbaden",
+        "defaultTeam IT (IT)": "Wiesbaden",
         "hint": "String which is removed from stop names and destinations"
     }, {
         "title": "Rotation",
