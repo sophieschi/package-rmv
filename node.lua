@@ -2,9 +2,10 @@ util.init_hosted()
 
 local json = require "json"
 local departures = {}
+local rotate_before = nil
+local transform = nil
 
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
-local transform = util.screen_transform(CONFIG.rotate)
 
 util.file_watch("departures.json", function(content)
     departures = json.decode(content)
@@ -42,6 +43,18 @@ categories[5] = resource.load_image("tram.png")
 categories[6] = resource.load_image("bus.png")
 
 function node.render()
+    if rotate_before ~= CONFIG.rotate then
+        transform = util.screen_transform(CONFIG.rotate)
+        rotate_before = CONFIG.rotate
+    end
+
+    if rotate_before == 90 or rotate_before == 270 then
+        real_width = NATIVE_HEIGHT
+        real_height = NATIVE_WIDTH
+    else
+        real_width = NATIVE_WIDTH
+        real_height = NATIVE_HEIGHT
+    end
     transform()
     CONFIG.background_color.clear()
     local now = unixnow()
@@ -154,12 +167,12 @@ function node.render()
                 y = y + 40
             end
 
-            if y > HEIGHT - 50 then
+            if y > real_height then
                 break
             end
         end
     end
-    
+
     --colored:use{color = {0, 0, 0, 1}}
     --white:draw(0, 0, NATIVE_WIDTH, 120)
 
