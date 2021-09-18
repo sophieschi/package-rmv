@@ -26,7 +26,7 @@ Refresh-Rate ermittelt, die das Limit nicht überschreitet.
 In den *Display Options* können verschiedene Einstellungen getätigt werden,
 die das Aussehen betreffen:
 
-- Die Option *Removed String* enthält einen String, der aus den Haltestellen- und Zielnamen entfernt wird. Hierüber kann z. B.  der lokale Ortsname entfernt werden.
+- Die Option *Removed String* enthält einen String, der vom Beginn des Haltestellen- und Zielnamens entfernt wird. Hierüber kann z. B.  der lokale Ortsname entfernt werden.
 - Die Option *Rotation* gibt die Display-Rotation an.
 - Mit der Option *Show vehicle type* wird vor der Liniennummer ein Symbol eingeblendet, das den verwendeten Fahrzeugtyp angibt. Derzeit gibt es folgende Symbole:
   - Eisenbahn (Fernverkehr)
