@@ -139,7 +139,7 @@ function node.render()
                 CONFIG.font:write(x + 180, y, dep.direction, 60, stop_r,stop_g,stop_b, 1)
                 y = y + 60
                 CONFIG.font:write(x + 180, y, time .. platform .. " " .. append , 45, 1,1,1,1)
-                y = y + 70
+                y = y + 60
             else
                 if CONFIG.showtype then
                     categories[tonumber(dep.category)]:draw(120, y, 170, y+50)
