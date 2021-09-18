@@ -1,31 +1,38 @@
--- Part of info-beamer hosted
---
--- Copyright (c) 2014,2015, Florian Wesch <fw@dividuum.de>
--- All rights reserved.
---
--- Redistribution and use in source and binary forms, with or without
--- modification, are permitted provided that the following conditions are
--- met:
---
---     Redistributions of source code must retain the above copyright
---     notice, this list of conditions and the following disclaimer. 
---
---     Redistributions in binary form must reproduce the above copyright
---     notice, this list of conditions and the following disclaimer in the
---     documentation and/or other materials provided with the
---     distribution.  
---
--- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
--- IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
--- THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
--- PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
--- CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
--- EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
--- PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
--- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
--- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
--- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
--- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+--[[
+
+  Part of info-beamer hosted. You can find the latest version
+  of this file at:
+  
+  https://github.com/info-beamer/package-sdk
+
+  Copyright (c) 2014,2015,2016,2017 Florian Wesch <fw@dividuum.de>
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are
+  met:
+
+      Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer. 
+
+      Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the
+      distribution.  
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+  IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+]]--
 
 local resource_types = {
     ["image"] = function(value)
@@ -59,6 +66,9 @@ local resource_types = {
                 surface = nil
             end
         end
+        function image.get_config()
+            return image
+        end
         return image
     end;
     ["video"] = function(value)
@@ -75,12 +85,12 @@ local resource_types = {
             return surface
         end
         function video.load(opt)
-            video.ensure_loaded()
+            video.ensure_loaded(opt)
             local state = surface:state()
             return state ~= "loading"
         end
-        function video.get_surface()
-            return video.ensure_loaded()
+        function video.get_surface(opt)
+            return video.ensure_loaded(opt)
         end
         function video.draw(...)
             video.ensure_loaded():draw(...)
@@ -90,6 +100,9 @@ local resource_types = {
                 surface:dispose()
                 surface = nil
             end
+        end
+        function video.get_config()
+            return video
         end
         return video
     end;
@@ -122,11 +135,26 @@ local resource_types = {
                 surface = nil
             end
         end
+        function child.get_config()
+            return child
+        end
         return child
+    end;
+    ["json"] = function(value)
+        return require("json").decode(value)
     end;
 }
 
 local types = {
+    ["date"] = function(value)
+        return value
+    end;
+    ["json"] = function(value)
+        return value
+    end;
+    ["text"] = function(value)
+        return value
+    end;
     ["string"] = function(value)
         return value
     end;
@@ -136,10 +164,16 @@ local types = {
     ["select"] = function(value)
         return value
     end;
+    ["device"] = function(value)
+        return value
+    end;
     ["boolean"] = function(value)
         return value
     end;
     ["duration"] = function(value)
+        return value
+    end;
+    ["custom"] = function(value)
         return value
     end;
     ["color"] = function(value)
