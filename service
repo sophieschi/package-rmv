@@ -256,6 +256,19 @@ def regenerate():
         )
         return urllib2.urlopen(url).read()
 
+    def calculate_request_minutes(departures_per_minute, request_minutes):
+        calculated_departure_height = departures_per_minute * request_minutes * 70
+
+        while calculated_departure_height <= screen_height:
+            request_minutes += 30
+            calculated_departure_height = departures_per_minute * request_minutes * 70
+
+            if request_minutes >= 1440:
+                # Don't ever show more than one day of departures
+                break
+
+        return request_minutes
+
     departures = []
 
     for stop in CONFIG['stop'].split(','):
@@ -320,12 +333,19 @@ def regenerate():
         # over the hour. It's okay to assume that, because if our calculation
         # turns out wrong, we'll just increase the amount of minutes next
         # time again.
-        calculated_departure_height = departures_per_minute * request_minutes * 70
-        while calculated_departure_height <= screen_height:
-            request_minutes += 30
-            calculated_departure_height = departures_per_minute * request_minutes * 70
+        request_minutes = calculate_request_minutes(departures_per_minute, request_minutes)
 
-        print 'adjusted request_minutes to {}'.format(request_minutes)
+    elif departures_height > screen_height*2:
+        # Something weird happened, we got way more departures than expected.
+        # Let's re-calculate the amount of departures we need, because we
+        # don't want to request lots of data that will never be shown.
+        # The inner if is needed to avoid calculating the minutes over and
+        # over, if a 30 minute request gets us more than double our screen
+        # height of data.
+        if request_minutes > 30:
+            request_minutes = calculate_request_minutes(departures_per_minute, 30)
+
+    print 'new request_minutes is {}'.format(request_minutes)
 
     with file("departures.json", "wb") as f:
         f.write(json.dumps(departures,ensure_ascii=False).encode("utf8"))
