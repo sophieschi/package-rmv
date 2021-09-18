@@ -1,11 +1,12 @@
 #!/usr/bin/env python
-import re
-import traceback
-import time
-import json
-import urllib2
-import pytz
 import hashlib
+import json
+import pytz
+import re
+import sys
+import time
+import traceback
+import urllib2
 from datetime import datetime, timedelta
 from itertools import islice
 
@@ -17,6 +18,9 @@ minutes = re.compile("([0-9]+) min")
 exact = re.compile("([0-9]+):([0-9]+)")
 
 request_minutes = 30
+
+def log(msg):
+    print >>sys.stderr, "[rmv] %s" % msg
 
 def rgb2hsv(r, g, b):
     r, g, b = r/255.0, g/255.0, b/255.0
@@ -316,7 +320,7 @@ def regenerate():
     # Now that we know the departure list, we can calculate if we actually
     # have enough departures to fill the whole screen. If not, we calculate
     # how many minutes we'd need, so we can request more on the next run
-    print 'current request_minutes is {}'.format(request_minutes)
+    log('current request_minutes is {}'.format(request_minutes))
 
     if CONFIG['rotate'] in (90, 270):
         screen_height = DEVICE.screen_resolution[0]
@@ -326,7 +330,7 @@ def regenerate():
     departures_per_minute = len(departures)/float(request_minutes)
     departures_height = len(departures)*70
 
-    print 'there are {} departures per minute ({} total), filling {} pixels currently (want {})'.format(departures_per_minute, len(departures), departures_height, screen_height)
+    log('there are {} departures per minute, filling {} pixels currently (want {})'.format(departures_per_minute, departures_height, screen_height))
 
     if departures_height < screen_height:
         # This assumes we get an equal amount of departures per minute
@@ -345,8 +349,9 @@ def regenerate():
         if request_minutes > 30:
             request_minutes = calculate_request_minutes(departures_per_minute, 30)
 
-    print 'new request_minutes is {}'.format(request_minutes)
+    log('new request_minutes is {}'.format(request_minutes))
 
+    log('writing {} departures to json'.format(len(departures)))
     with file("departures.json", "wb") as f:
         f.write(json.dumps(departures,ensure_ascii=False).encode("utf8"))
 
