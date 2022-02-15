@@ -196,19 +196,26 @@ def regenerate():
         departures = []
         remove = re.escape(CONFIG['remove'].strip())
         for departure in stop_info['Departure']:
-            name = departure['name'] 
-            symbol = departure['Product']['line']
-            if symbol == "":
-                symbol = departure['name'].strip()
-            cat = departure['Product']['catCode']
-            operatorCode = departure['Product'].get('operatorCode', 'foo')
+            name = departure['name']
+
+            symbol = ''
+            catCode = -1
+            operatorCode = None
+            for product in departure['Product']:
+                if product['line'] and product['catCode']:
+                    symbol = product['line']
+                    catCode = product['catCode']
+                    operatorCode = product.get('operatorCode', None)
+                    break
+
+
             font_r, font_g, font_b = (1, 1, 1)
             if operatorCode in mapping:
                 r, g, b = mapping[operatorCode].get(symbol, (0.1,0.1,0.1)) 
                 h, s, v = rgb2hsv(r*255, g*255, b*255)
                 if v > 0.75:
                     font_r, font_g, font_b = (0, 0, 0)
-            elif cat == '0':
+            elif catCode == '0':
                 r, g, b = (1, 1, 1)
                 font_r, font_g, font_b = from_hex('c1121c')
             else:
@@ -217,14 +224,18 @@ def regenerate():
                 h, s, v = rgb2hsv(r*255, g*255, b*255)
                 if v > 0.75:
                     font_r, font_g, font_b = (0, 0, 0)
+
             direction = re.sub('^('+remove+'[- ])', '', departure['direction'])
             stop = re.sub('^('+remove+'[- ])', '', departure['stop'])
+
             track = departure['track'] if 'track' in departure else ""
+
             scheduled = datetime.strptime(departure['date'] + ' ' + departure['time'], '%Y-%m-%d %H:%M:%S')
             leave_time = scheduled
+
             delay = 0
-            if 'rtTime' in departure:
-                real_time = datetime.strptime(departure['date'] + ' ' + departure['rtTime'], '%Y-%m-%d %H:%M:%S')
+            if 'rtTime' in departure and 'rtDate' in departure:
+                real_time = datetime.strptime(departure['rtDate'] + ' ' + departure['rtTime'], '%Y-%m-%d %H:%M:%S')
                 leave_time = real_time
                 diff = real_time - scheduled
                 delay = int(diff.total_seconds()/60)
@@ -236,7 +247,7 @@ def regenerate():
                 {
                     "direction": direction,
                     "symbol": symbol,
-                    "category": cat,
+                    "category": catCode,
                     "platform": track,
                     "stop": stop,
                     "nice_date": l,
