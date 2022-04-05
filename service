@@ -264,11 +264,17 @@ def regenerate():
         return departures
 
     def download(stop, minutes, key):
-        url = "https://www.rmv.de/hapi/departureBoard?id={stop}&duration={minutes}&format=json&accessId={key}".format(
-            stop=stop,
-            minutes=minutes,
-            key=key,
-        )
+        if key.startswith('http://') or key.startswith('https://'):
+            url = "{prefix}/{stop}.json".format(
+                prefix=key,
+                stop=stop,
+            )
+        else:
+            url = "https://www.rmv.de/hapi/departureBoard?id={stop}&duration={minutes}&format=json&accessId={key}".format(
+                stop=stop,
+                minutes=minutes,
+                key=key,
+            )
         return urllib2.urlopen(url).read()
 
     def calculate_request_minutes(departures_per_minute, request_minutes):
@@ -338,29 +344,30 @@ def regenerate():
     else:
         screen_height = DEVICE.screen_resolution[1]
 
-    departures_per_minute = len(departures)/float(request_minutes)
-    departures_height = len(departures)*70
+    if not (CONFIG["key"].startswith('http://') or CONFIG["key"].startswith('https://')):
+        departures_per_minute = len(departures)/float(request_minutes)
+        departures_height = len(departures)*70
 
-    log('there are {} departures per minute, filling {} pixels currently (want {})'.format(departures_per_minute, departures_height, screen_height))
+        log('there are {} departures per minute, filling {} pixels currently (want {})'.format(departures_per_minute, departures_height, screen_height))
 
-    if departures_height < screen_height:
-        # This assumes we get an equal amount of departures per minute
-        # over the hour. It's okay to assume that, because if our calculation
-        # turns out wrong, we'll just increase the amount of minutes next
-        # time again.
-        request_minutes = calculate_request_minutes(departures_per_minute, request_minutes)
+        if departures_height < screen_height:
+            # This assumes we get an equal amount of departures per minute
+            # over the hour. It's okay to assume that, because if our calculation
+            # turns out wrong, we'll just increase the amount of minutes next
+            # time again.
+            request_minutes = calculate_request_minutes(departures_per_minute, request_minutes)
 
-    elif departures_height > screen_height*2:
-        # Something weird happened, we got way more departures than expected.
-        # Let's re-calculate the amount of departures we need, because we
-        # don't want to request lots of data that will never be shown.
-        # The inner if is needed to avoid calculating the minutes over and
-        # over, if a 30 minute request gets us more than double our screen
-        # height of data.
-        if request_minutes > 30:
-            request_minutes = calculate_request_minutes(departures_per_minute, 30)
+        elif departures_height > screen_height*2:
+            # Something weird happened, we got way more departures than expected.
+            # Let's re-calculate the amount of departures we need, because we
+            # don't want to request lots of data that will never be shown.
+            # The inner if is needed to avoid calculating the minutes over and
+            # over, if a 30 minute request gets us more than double our screen
+            # height of data.
+            if request_minutes > 30:
+                request_minutes = calculate_request_minutes(departures_per_minute, 30)
 
-    log('new request_minutes is {}'.format(request_minutes))
+        log('new request_minutes is {}'.format(request_minutes))
 
     log('writing {} departures to json'.format(len(departures)))
     with file("departures.json", "wb") as f:
@@ -378,19 +385,23 @@ def idle(seconds):
 def main():
     while 1:
         try:
-            request_limit = 4900
-
-            if CONFIG['requests_max'] <= request_limit:
-                request_limit = CONFIG['requests_max']
-
-            number_of_stops = len(CONFIG['stop'].split(','))
-            sleep_time = 86400 / ( request_limit / number_of_stops)
-
-            if sleep_time < 30:
-                sleep_time = 30
-
             regenerate()
-            idle(sleep_time)
+
+            if CONFIG["key"].startswith('http://') or CONFIG["key"].startswith('https://'):
+                idle(15)
+            else:
+                request_limit = 4900
+
+                if CONFIG['requests_max'] <= request_limit:
+                    request_limit = CONFIG['requests_max']
+
+                number_of_stops = len(CONFIG['stop'].split(','))
+                sleep_time = 86400 / ( request_limit / number_of_stops)
+
+                if sleep_time < 30:
+                    sleep_time = 30
+
+                idle(sleep_time)
         except Exception:
             traceback.print_exc()
             time.sleep(30)

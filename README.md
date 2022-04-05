@@ -11,6 +11,8 @@ Dieses Package für info-beamer hosted zeigt die nächsten Abfahrten einer
 oder mehrerer Haltestellen im Bereich des
 [Rhein-Main-Verkehrsverbunds (RMV)](https://www.rmv.de/) an.
 
+## Einstellungen
+
 ![Screenshot der Einstellungen](setup.png)
 
 Zur Konfiguration wird ein API-Key der [RMV-OpenData-API](https://opendata.rmv.de/)
@@ -41,3 +43,25 @@ die das Aussehen betreffen:
 
 Der oben gezeigte Screenshot entspricht bis auf die Display-Rotation den
 gezeigten Einstellungen.
+
+## Caching
+
+Wenn viele Displays betrieben werden, besteht die Gefahr, das API-Limit
+zu überschreiten oder zu wenige Updates zu erhalten. Aus diesem Grund
+können die Abfahrten mit dem Script `cache_runner.py` auf einem lokalen
+Server gecached werden.
+
+Das Script erwartet eine `config.json` in folgendem Format:
+
+```json
+{
+    "stop": "3025496,0815",
+    "key": "your-api-key",
+    "requests_max": "4900",
+    "request_minutes": 1000,
+    "outdir": "/var/www/somewhere/"
+}
+```
+
+In der Info-Beamer-Konfiguration wird dann statt dem API-Key die URL
+angegeben. Authentifizierung wird nicht unterstützt.

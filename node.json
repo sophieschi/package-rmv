@@ -8,7 +8,7 @@
         "type": "section",
         "ui_width": 8
     }, {
-        "title": "API Key",
+        "title": "API-Key oder Cache-URL",
         "ui_width": 8,
         "name": "key",
         "type": "string",
