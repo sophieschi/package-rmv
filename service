@@ -265,6 +265,7 @@ def regenerate():
 
     def download(stop, minutes, key):
         if key.startswith('http://') or key.startswith('https://'):
+            key = key.rstrip('/')
             url = "{prefix}/{stop}.json".format(
                 prefix=key,
                 stop=stop,
@@ -275,6 +276,10 @@ def regenerate():
                 minutes=minutes,
                 key=key,
             )
+        log("Requesting {stop} info from {url}".format(
+            stop=stop,
+            url=url,
+        ))
         return urllib2.urlopen(url).read()
 
     def calculate_request_minutes(departures_per_minute, request_minutes):
