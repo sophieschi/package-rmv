@@ -6,7 +6,7 @@
     "options": [{
         "title": "OpenData API",
         "type": "section",
-        "ui_width": 8
+        "ui_width": 12
     }, {
         "title": "API-Key oder Cache-URL",
         "ui_width": 8,
@@ -21,7 +21,7 @@
         "name": "requests_max",
         "type": "integer",
         "default": 4900,
-        "hint": "maximum number of requests done to RMV API (per device, max 4900)"
+        "hint": "maximum number of requests done to RMV API (per device, max 4900) - will get ignored if using a caching server"
     }, {
         "title": "HAFAS stop id(s)",
         "ui_width": 12,
@@ -32,17 +32,17 @@
     }, {
         "title": "Display Options",
         "type": "section",
-        "ui_width": 8
+        "ui_width": 12
     }, {
         "title": "Removed String",
-        "ui_width": 6,
+        "ui_width": 8,
         "name": "remove",
         "type": "string",
         "default": "Wiesbaden",
         "hint": "String which is removed from stop names and destinations"
     }, {
         "title": "Rotation",
-        "ui_width": 2,
+        "ui_width": 4,
         "name": "rotate",
         "type": "select",
         "default": 0,
@@ -60,15 +60,15 @@
         "type": "boolean",
         "default": true
     }, {
-        "title": "Time Offset",
-        "ui_width": 4,
+        "title": "Time Offset in minutes",
+        "ui_width": 6,
         "name": "offset",
         "type": "integer",
         "default": 0,
         "hint": "offset to use when displaying departures (does „early fadeout“ to account for walking time to stop)"
     }, {
         "title": "Background",
-        "ui_width": 2,
+        "ui_width": 6,
         "name": "background_color",
         "type": "color",
         "default": [0,0,0,1]
@@ -78,5 +78,25 @@
         "name": "font",
         "type": "font",
         "default": "silkscreen.ttf"
+    }, {
+        "default": 150,
+        "hint": "Height of one 'departure in less than 10 minutes' line, departures further in the future will use 66% of that",
+        "name": "line_height",
+        "title": "Line Height",
+        "ui_width": 6,
+        "type": "select",
+        "options": [
+            [50, "50px"],
+            [60, "60px"],
+            [70, "70px"],
+            [80, "80px"],
+            [90, "90px"],
+            [100, "100px"],
+            [110, "110px"],
+            [120, "120px"],
+            [130, "130px"],
+            [140, "140px"],
+            [150, "150px"]
+        ]
     }]
 }
