@@ -202,7 +202,7 @@ def regenerate():
             catCode = -1
             operatorCode = None
             for product in departure['Product']:
-                if product['line'] and product['catCode']:
+                if product.get('line') and product.get('catCode'):
                     symbol = product['line']
                     catCode = product['catCode']
                     operatorCode = product.get('operatorCode', None)
