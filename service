@@ -1,46 +1,21 @@
 #!/usr/bin/env python
-import hashlib
-import json
+from json import dumps
 import pytz
 import re
 import sys
 import time
 import traceback
-import urllib2
+from requests import get
 from datetime import datetime, timedelta
-from itertools import islice
-
+from calendar import timegm
 from hosted import CONFIG, NODE, DEVICE
 
 CONFIG.restart_on_update()
-
-minutes = re.compile("([0-9]+) min")
-exact = re.compile("([0-9]+):([0-9]+)")
 
 request_minutes = 30
 
 def log(msg):
     print >>sys.stderr, "[rmv] %s" % msg
-
-def rgb2hsv(r, g, b):
-    r, g, b = r/255.0, g/255.0, b/255.0
-    mx = max(r, g, b)
-    mn = min(r, g, b)
-    df = mx-mn
-    if mx == mn:
-        h = 0
-    elif mx == r:
-        h = (60 * ((g-b)/df) + 360) % 360
-    elif mx == g:
-        h = (60 * ((b-r)/df) + 120) % 360
-    elif mx == b:
-        h = (60 * ((r-g)/df) + 240) % 360
-    if mx == 0:
-        s = 0
-    else:
-        s = df/mx
-        v = mx
-    return h, s, v
 
 def current_time():
     timezone = pytz.timezone("Europe/Berlin")
@@ -51,217 +26,59 @@ def current_time():
     return now
 
 def to_unixtimestamp(dt):
-    return int(time.mktime(dt.timetuple()))
+    return timegm(dt.timetuple())
 
 def regenerate():
     global request_minutes
 
     now = current_time()
 
-    def from_hex(h):
-        r = round(1.0 / 255 * int(h[0:2], 16), 2)
-        g = round(1.0 / 255 * int(h[2:4], 16), 2)
-        b = round(1.0 / 255 * int(h[4:6], 16), 2)
-        return r, g, b
-
-    mapping = {
-        'ESW': {
-            '1': from_hex('f39433'),
-            '2': from_hex('00a7e7'),
-            '3': from_hex('ddae8d'),
-            '4': from_hex('64b445'),
-            '5': from_hex('5da5b8'),
-            '6': from_hex('d51317'),
-            '8': from_hex('f39433'),
-            '9': from_hex('a94f2b'),
-            '14': from_hex('64b445'),
-            '15': from_hex('5da5b8'),
-            '16': from_hex('f0988f'),
-            '17': from_hex('5c2483'),
-            '18': from_hex('ea5b0c'),
-            '20': from_hex('acb371'),
-            'AST 20': from_hex('fdc300'),
-            '21': from_hex('d1b122'),
-            '22': from_hex('d1b122'),
-            '23': from_hex('0086cd'),
-            '24': from_hex('0086cd'),
-            'AST 24': from_hex('fdc300'),
-            '26': from_hex('adce6d'),
-            'AST 26': from_hex('fdc300'),
-            '27': from_hex('cd7bab'),
-            '28': from_hex('5bc5f2'),
-            '30': from_hex('ba0161'),
-            '33': from_hex('ddae8d'),
-            '34': from_hex('9097c3'),
-            'AST 35': from_hex('fdc300'),
-            'AST 36': from_hex('fdc300'),
-            '37': from_hex('9f4c97'),
-            '38': from_hex('009a93'),
-            '39': from_hex('e7344c'),
-            '43': from_hex('ffd500'),
-            '45': from_hex('acb371'),
-            '46': from_hex('516fb4'),
-            'AST 46': from_hex('fdc300'),
-            '47': from_hex('006f8c'),
-            '48': from_hex('fab437'),
-            'N2': from_hex('1d327b'),
-            'N3': from_hex('1d327b'),
-            'N4': from_hex('1d327b'),
-            'N5': from_hex('1d327b'),
-            'N7': from_hex('1d327b'),
-            'N9': from_hex('1d327b'),
-            'N10': from_hex('1d327b'),
-            'N11': from_hex('1d327b'),
-            'N12': from_hex('1d327b'),
-            'E': from_hex('60b565'),
-        },
-        'DBR': {
-            'S1': from_hex('00a768'),
-            'S2': from_hex('00a768'),
-            'S3': from_hex('00a768'),
-            'S4': from_hex('00a768'),
-            'S5': from_hex('00a768'),
-            'S6': from_hex('00a768'),
-            'S7': from_hex('00a768'),
-            'S8': from_hex('00a768'),
-            'S9': from_hex('00a768'),
-        },
-        'MVG': {
-            '28': from_hex('f7a600'),
-            '33': from_hex('232c77'),
-            '50': from_hex('41c0f0'),
-            '51': from_hex('00649c'),
-            '52': from_hex('0098cd'),
-            '53': from_hex('a1daf8'),
-            '54': from_hex('007c4e'),
-            '55': from_hex('007c4e'),
-            '56': from_hex('ea5297'),
-            '57': from_hex('ea5297'),
-            '59': from_hex('008bd2'),
-            '6': from_hex('cb5e10'),
-            '60': from_hex('64569d'),
-            '61': from_hex('64569d'),
-            '62': from_hex('d190b6'),
-            '63': from_hex('d190b6'),
-            '64': from_hex('009090'),
-            '65': from_hex('009090'),
-            '66': from_hex('d67c13'),
-            '67': from_hex('d67c13'),
-            '68': from_hex('c00d0e'),
-            '70': from_hex('97b816'),
-            '71': from_hex('96b716'),
-            '75': from_hex('166c79'),
-            '76': from_hex('e30613'),
-            '78': from_hex('f3997b'),
-            '9': from_hex('d6d000'),
-            '90': from_hex('203889'),
-            '91': from_hex('6e5239'),
-            '92': from_hex('a85e24'),
-            '99': from_hex('c2a47a'),
-        },
-        'VGF': {
-            'U1': from_hex('00309a'),
-            'U2': from_hex('00309a'),
-            'U3': from_hex('00309a'),
-            'U4': from_hex('00309a'),
-            'U5': from_hex('00309a'),
-            'U6': from_hex('00309a'),
-            'U7': from_hex('00309a'),
-            'U8': from_hex('00309a'),
-            'U9': from_hex('00309a'),
-            '11': from_hex('f90000'),
-            '12': from_hex('f90000'),
-            '14': from_hex('f90000'),
-            '15': from_hex('f90000'),
-            '16': from_hex('f90000'),
-            '17': from_hex('f90000'),
-            '18': from_hex('f90000'),
-            '19': from_hex('f90000'),
-            '20': from_hex('f90000'),
-            '21': from_hex('f90000'),
-        }
-    }
-
-    category = {
-        '0': "ICE",
-        '1': "Fern",
-        '2': "Regio",
-        '3': "S-Bahn",
-        '4': "U-Bahn",
-        '5': "Tram",
-        '6': "Bus",
-    }
-
     def parse(stop_info):
-        departures = []
+        departures = {}
         remove = re.escape(CONFIG['remove'].strip())
+
+        stop_name = None
+
         for departure in stop_info['Departure']:
-            name = departure['name']
+            try:
+                stop = re.sub('^('+remove+'[- ])', '', departure['stop'])
+                direction = re.sub('^('+remove+'[- ])', '', departure['direction'])
+                track = departure.get('track', '').strip()
+                scheduled = datetime.strptime(departure['date'] + ' ' + departure['time'], '%Y-%m-%d %H:%M:%S')
 
-            symbol = ''
-            catCode = -1
-            operatorCode = None
-            for product in departure['Product']:
-                if product.get('line') and product.get('catCode'):
-                    symbol = product['line']
-                    catCode = product['catCode']
-                    operatorCode = product.get('operatorCode', None)
-                    break
+                if not stop_name:
+                    stop_name = stop
 
+                leave_time = None
+                delay = 0
+                line_no = ''
+                category = -1
+                operator_code = None
+                for product in departure['Product']:
+                    if product.get('line') and product.get('catCode'):
+                        line_no = product['line']
+                        category = product['catCode']
+                        operator_code = product.get('operatorCode', None)
+                        break
 
-            font_r, font_g, font_b = (1, 1, 1)
-            if operatorCode in mapping:
-                r, g, b = mapping[operatorCode].get(symbol, (0.1,0.1,0.1)) 
-                h, s, v = rgb2hsv(r*255, g*255, b*255)
-                if v > 0.75:
-                    font_r, font_g, font_b = (0, 0, 0)
-            elif catCode == '0':
-                r, g, b = (1, 1, 1)
-                font_r, font_g, font_b = from_hex('c1121c')
-            else:
-                name_hash = hashlib.md5(name).hexdigest()
-                r, g, b = from_hex(name_hash[:6])
-                h, s, v = rgb2hsv(r*255, g*255, b*255)
-                if v > 0.75:
-                    font_r, font_g, font_b = (0, 0, 0)
+                if 'rtTime' in departure and 'rtDate' in departure:
+                    real_time = datetime.strptime(departure['rtDate'] + ' ' + departure['rtTime'], '%Y-%m-%d %H:%M:%S')
+                    leave_time = real_time
+                    diff = real_time - scheduled
+                    delay = int(diff.total_seconds()/60)
 
-            direction = re.sub('^('+remove+'[- ])', '', departure['direction'])
-            stop = re.sub('^('+remove+'[- ])', '', departure['stop'])
+                departures['{} {} {}'.format(leave_time or scheduled, line_no, direction)] = {
+                    'direction': str(line_no) + ' ' + direction,
+                    'category': category,
+                    'track': track,
+                    'scheduled': scheduled.strftime('%H:%M'),
+                    'actual': leave_time.strftime('%H:%M') if leave_time else '',
+                    'timestamp': to_unixtimestamp(leave_time or scheduled),
+                }
+            except Exception as e:
+                log(repr(e))
 
-            track = departure['track'] if 'track' in departure else ""
-
-            scheduled = datetime.strptime(departure['date'] + ' ' + departure['time'], '%Y-%m-%d %H:%M:%S')
-            leave_time = scheduled
-
-            delay = 0
-            if 'rtTime' in departure and 'rtDate' in departure:
-                real_time = datetime.strptime(departure['rtDate'] + ' ' + departure['rtTime'], '%Y-%m-%d %H:%M:%S')
-                leave_time = real_time
-                diff = real_time - scheduled
-                delay = int(diff.total_seconds()/60)
-
-            l = datetime.strftime(leave_time, '%H:%M')
-
-            departures.append((
-                (to_unixtimestamp(leave_time), direction),
-                {
-                    "direction": direction,
-                    "symbol": symbol,
-                    "category": catCode,
-                    "platform": track,
-                    "stop": stop,
-                    "nice_date": l,
-                    "date": to_unixtimestamp(leave_time),
-                    "color_r": r,
-                    "color_g": g,
-                    "color_b": b,
-                    "font_r": font_r,
-                    "font_g": font_g,
-                    "font_b": font_b,
-                },
-            ))
-
-        return departures
+        return departures, stop_name
 
     def download(stop, minutes, key):
         if key.startswith('http://') or key.startswith('https://'):
@@ -280,7 +97,10 @@ def regenerate():
             stop=stop,
             url=url,
         ))
-        return urllib2.urlopen(url).read()
+        r = get(url)
+        r.raise_for_status()
+        #r.encoding = 'utf-8'
+        return r.json()
 
     def calculate_request_minutes(departures_per_minute, request_minutes):
         calculated_departure_height = departures_per_minute * request_minutes * 70
@@ -296,62 +116,35 @@ def regenerate():
         return request_minutes
 
     departures = []
+    min_deps_per_request = 1000
 
-    for stop in CONFIG['stop'].split(','):
-        departures.extend(parse(json.loads(download(stop, request_minutes, CONFIG['key']))))
+    for stop_id in CONFIG['stop'].split(','):
+        deps, stop_name = parse(download(stop_id, request_minutes, CONFIG['key']))
 
-    departures.sort()
-    departures = [info for sort_key, info in departures]
+        sorted_deps = []
 
-    # find next run
-    for n, dep in enumerate(departures):
-        for follow in islice(departures, n+1, None):
-            if dep['platform'] != "":
-                if dep['platform'] == follow['platform'] and \
-                        dep['stop'] == follow['stop'] and \
-                        dep['symbol'] == follow['symbol']:
-                    dep['next_date'] = follow['date']
-                    dep['next_nice_date'] = follow['nice_date']
-                    break
-            else:
-                if dep['direction'] == follow['direction'] and \
-                        dep['stop'] == follow['stop'] and \
-                        dep['symbol'] == follow['symbol']:
-                    dep['next_date'] = follow['date']
-                    dep['next_nice_date'] = follow['nice_date']
-                    break
+        for _, departure in sorted(deps.items()):
+            sorted_deps.append(departure)
 
-    # find duplicates
-    for n, dep in enumerate(departures):
-        for follow in islice(departures, n+1, None):
-            if dep['direction'] == follow['direction'] and \
-                    dep['stop'] != follow['stop'] and \
-                    dep['symbol'] == follow['symbol'] and \
-                    abs(dep['date'] - follow['date']) < 5 * 60:
-                print "duplicate:"
-                print dep
-                print follow
-                print
-                dep['duplicate'] = True
-                break
+        departures.append({
+            'id': stop_id,
+            'name': stop_name,
+            'departures': sorted_deps,
+        })
 
-    departures = [dep for dep in departures if not 'duplicate' in dep]
+        min_deps_per_request = min(min_deps_per_request, len(sorted_deps))
 
     # pprint(departures, width=300)
 
     # Now that we know the departure list, we can calculate if we actually
     # have enough departures to fill the whole screen. If not, we calculate
     # how many minutes we'd need, so we can request more on the next run
-    log('current request_minutes is {}'.format(request_minutes))
-
-    if CONFIG['rotate'] in (90, 270):
-        screen_height = DEVICE.screen_resolution[0]
-    else:
-        screen_height = DEVICE.screen_resolution[1]
-
     if not (CONFIG["key"].startswith('http://') or CONFIG["key"].startswith('https://')):
-        departures_per_minute = len(departures)/float(request_minutes)
-        departures_height = len(departures)*70
+        log('current request_minutes is {}'.format(request_minutes))
+
+        screen_height = DEVICE.screen_resolution[1]
+        departures_per_minute = min_deps_per_request/float(request_minutes)
+        departures_height = len(departures)*(CONFIG["font_size"]+20)
 
         log('there are {} departures per minute, filling {} pixels currently (want {})'.format(departures_per_minute, departures_height, screen_height))
 
@@ -374,9 +167,14 @@ def regenerate():
 
         log('new request_minutes is {}'.format(request_minutes))
 
-    log('writing {} departures to json'.format(len(departures)))
+    log('writing {} stations to json'.format(len(departures)))
     with file("departures.json", "wb") as f:
-        f.write(json.dumps(departures,ensure_ascii=False).encode("utf8"))
+        f.write(
+            dumps(
+                departures,
+                ensure_ascii=False,
+            ).encode("utf8")
+        )
 
 def send_clock():
     NODE['/clock/set'](to_unixtimestamp(current_time()))

@@ -14,89 +14,69 @@
         "type": "string",
         "default": "",
         "placeholder": "5555555-555555-5555-5555-555555",
-        "hint": "RMV OpenData API key"
+        "hint": "RMV OpenData API key oder Adresse des Cache-Servers"
     }, {
         "title": "Request Limit",
         "ui_width": 4,
         "name": "requests_max",
         "type": "integer",
         "default": 4900,
-        "hint": "maximum number of requests done to RMV API (per device, max 4900) - will get ignored if using a caching server"
+        "hint": "Tägliches Request-Limit an die RMV-API (pro Device) - wird bei Benutzung des Cache-Servers nicht ausgewertet"
     }, {
         "title": "HAFAS stop id(s)",
         "ui_width": 12,
         "name": "stop",
         "type": "string",
         "default": "3016471",
-        "hint": "separate multiple ids by comma"
+        "hint": "Haltestellen-IDs, mehrere mit Komma separieren"
     }, {
-        "title": "Display Options",
+        "title": "Darstellung",
         "type": "section",
         "ui_width": 12
     }, {
-        "title": "Removed String",
+        "title": "Cleanup-String",
         "ui_width": 8,
         "name": "remove",
         "type": "string",
         "default": "Wiesbaden",
-        "hint": "String which is removed from stop names and destinations"
+        "hint": "Wird vom Beginn von Haltestellennamen entfernt"
     }, {
-        "title": "Rotation",
+        "title": "Zeit-Offset",
         "ui_width": 4,
-        "name": "rotate",
-        "type": "select",
-        "default": 0,
-        "hint": "Rotation of screen (clockwise)",
-        "options": [
-            [0, "0°"],
-            [90, "90°"],
-            [180, "180°"],
-            [270, "270°"]
-        ]
-    }, {
-        "title": "Show vehicle type",
-        "ui_width": 4,
-        "name": "showtype",
-        "type": "boolean",
-        "default": true
-    }, {
-        "title": "Time Offset in minutes",
-        "ui_width": 6,
         "name": "offset",
         "type": "integer",
         "default": 0,
-        "hint": "offset to use when displaying departures (does „early fadeout“ to account for walking time to stop)"
+        "hint": "Offset für Abfahrtsanzeige (z. B. um Wegezeiten einzukalkulieren)"
     }, {
-        "title": "Background",
-        "ui_width": 6,
-        "name": "background_color",
-        "type": "color",
-        "default": [0,0,0,1]
-    }, {
-        "title": "Font",
+        "title": "Schriftart (allgemein)",
         "ui_width": 6,
         "name": "font",
         "type": "font",
         "default": "silkscreen.ttf"
     }, {
-        "default": 150,
-        "hint": "Height of one 'departure in less than 10 minutes' line, departures further in the future will use 66% of that",
-        "name": "line_height",
-        "title": "Line Height",
+        "title": "Font (für Echtzeitdaten)",
         "ui_width": 6,
-        "type": "select",
-        "options": [
-            [50, "50px"],
-            [60, "60px"],
-            [70, "70px"],
-            [80, "80px"],
-            [90, "90px"],
-            [100, "100px"],
-            [110, "110px"],
-            [120, "120px"],
-            [130, "130px"],
-            [140, "140px"],
-            [150, "150px"]
-        ]
+        "name": "font_actual",
+        "type": "font",
+        "default": "silkscreen.ttf"
+    }, {
+        "title": "Schriftgröße (allgemein)",
+        "ui_width": 6,
+        "name": "font_size",
+        "type": "integer",
+        "default": "50"
+    }, {
+        "title": "Schriftgröße (Haltestellenname)",
+        "ui_width": 6,
+        "name": "font_size_station",
+        "type": "integer",
+        "default": "80"
+    }, {
+        "title": "Intervall (in Sekunden)",
+        "ui_width": 6,
+        "name": "duration",
+        "type": "integer",
+        "default": "10",
+        "hint": "Wenn mehrere Haltestellen angegeben werden, wechsle in diesem Intervall zwischen den Haltestellen"
     }]
 }
