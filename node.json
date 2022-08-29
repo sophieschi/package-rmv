@@ -78,5 +78,12 @@
         "type": "integer",
         "default": 10,
         "hint": "Wenn mehrere Haltestellen angegeben werden, wechsle in diesem Intervall zwischen den Haltestellen"
+    }, {
+        "title": "Rotation 180°",
+        "ui_width": 4,
+        "name": "upside_down",
+        "type": "boolean",
+        "default": false,
+        "hint": "Rotation der Anzeige um 180° (für auf dem Kopf stehende Displays)"
     }]
 }

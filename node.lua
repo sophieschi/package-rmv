@@ -25,7 +25,7 @@ local function unixnow()
     return base_time + sys.now()
 end
 
-function node.render()
+function draw_schedule()
     gl.clear(0,0,0,1)
     local now = unixnow()
     local y = 240
@@ -101,5 +101,19 @@ function node.render()
                 break
             end
         end
+    end
+end
+
+function node.render()
+    gl.clear(0,0,0,1)
+
+    if CONFIG.upside_down then
+        gl.pushMatrix()
+        gl.translate(NATIVE_WIDTH, NATIVE_HEIGHT)
+        gl.rotate(180, 0, 0, 1)
+        draw_schedule()
+        gl.popMatrix()
+    else
+        draw_schedule()
     end
 end
