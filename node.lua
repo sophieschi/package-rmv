@@ -53,14 +53,18 @@ function node.render()
 
     scheduled_width = CONFIG.font:width("Planmäßig", 30)
     actual_width = CONFIG.font:width("Heute", 30)
+    line_width = CONFIG.font:width("Linie", 30)
     track_width = CONFIG.font:width("Steig", 30)
 
     scheduled_x = 100-(scheduled_width/2)
     actual_x = 300-(actual_width/2)
+    line_x = 530-line_width
     track_x = NATIVE_WIDTH-100-(track_width/2)
 
     CONFIG.font:write(scheduled_x, 195, "Planmäßig", 30, 1,1,1,1)
     CONFIG.font:write(actual_x, 195, "Heute", 30, 1,1,1,1)
+    CONFIG.font:write(line_x, 195, "Linie", 30, 1,1,1,1)
+    CONFIG.font:write(550, 195, "Ziel", 30, 1,1,1,1)
     CONFIG.font:write(track_x, 195, "Steig", 30, 1,1,1,1)
 
     now_offset = now + (CONFIG.offset * 60)
@@ -77,15 +81,18 @@ function node.render()
 
             scheduled_width = CONFIG.font:width(dep.scheduled, CONFIG.font_size)
             actual_width = CONFIG.font_actual:width(dep.actual, CONFIG.font_size)
+            line_width = CONFIG.font_actual:width(dep.line_no, CONFIG.font_size)
             track_width = CONFIG.font:width(dep.track, CONFIG.font_size)
 
             scheduled_x = 100-(scheduled_width/2)
             actual_x = 300-(actual_width/2)
+            line_x = 530-line_width
             track_x = NATIVE_WIDTH-100-(track_width/2)
 
             CONFIG.font:write(scheduled_x, y, dep.scheduled, CONFIG.font_size, 0,0,0,1)
             CONFIG.font_actual:write(actual_x, y, dep.actual, CONFIG.font_size, 0,0.4,0,5)
-            CONFIG.font:write(450, y, dep.direction, CONFIG.font_size, 0,0,0,1)
+            CONFIG.font:write(line_x, y, dep.line_no, CONFIG.font_size, 0,0,0,1)
+            CONFIG.font:write(550, y, dep.direction, CONFIG.font_size, 0,0,0,1)
             CONFIG.font:write(track_x, y, dep.track, CONFIG.font_size, 0,0,0,1)
 
             y = y+20+CONFIG.font_size

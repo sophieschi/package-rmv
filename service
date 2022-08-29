@@ -68,7 +68,8 @@ def regenerate():
                     delay = int(diff.total_seconds()/60)
 
                 departures['{} {} {}'.format(leave_time or scheduled, line_no, direction)] = {
-                    'direction': str(line_no) + ' ' + direction,
+                    'direction': direction,
+                    'line_no': str(line_no),
                     'category': category,
                     'track': track,
                     'scheduled': scheduled.strftime('%H:%M'),
