@@ -28,7 +28,6 @@ end
 function draw_schedule()
     gl.clear(0,0,0,1)
     local now = unixnow()
-    local y = 240
     local color = 0
 
     stop_sign:draw(20, 20, 150, 150)
@@ -41,13 +40,16 @@ function draw_schedule()
     local divisor = #departures*CONFIG.duration
     local dep_step = math.floor((sys.now() % divisor)/CONFIG.duration)+1
 
+    deps = departures[dep_step]
+
     local offset_scheduled = CONFIG.font_size*3
     local offset_actual = CONFIG.font_size*7
     local offset_line = CONFIG.font_size*11
     local offset_destination = offset_line + 20
     local offset_track = NATIVE_WIDTH-(CONFIG.font_size*3)
 
-    deps = departures[dep_step]
+    local top_bar_font_size = math.floor(CONFIG.font_size*0.6)
+    local top_bar_padding = math.floor(CONFIG.font_size*0.2)
 
     stop_string = deps.name
     stop_width = CONFIG.font:width(stop_string, CONFIG.font_size_station)
@@ -55,23 +57,25 @@ function draw_schedule()
     stop_y = 95-(CONFIG.font_size_station/2)
     CONFIG.font:write(stop_x+160, stop_y, stop_string, CONFIG.font_size_station, 1,1,1,1)
 
-    accent_base:draw(0, 190, NATIVE_WIDTH, 230)
+    accent_base:draw(0, 190, NATIVE_WIDTH, 190+top_bar_font_size+top_bar_padding*2)
 
-    scheduled_width = CONFIG.font:width("Planmäßig", 30)
-    actual_width = CONFIG.font:width("Heute", 30)
-    line_width = CONFIG.font:width("Linie", 30)
-    track_width = CONFIG.font:width("Steig", 30)
+    scheduled_width = CONFIG.font:width("Planmäßig", top_bar_font_size)
+    actual_width = CONFIG.font:width("Heute", top_bar_font_size)
+    line_width = CONFIG.font:width("Linie", top_bar_font_size)
+    track_width = CONFIG.font:width("Steig", top_bar_font_size)
 
     scheduled_x = offset_scheduled-(scheduled_width/2)
     actual_x = offset_actual-(actual_width/2)
     line_x = offset_line-line_width
     track_x = offset_track-(track_width/2)
 
-    CONFIG.font:write(scheduled_x, 195, "Planmäßig", 30, 1,1,1,1)
-    CONFIG.font:write(actual_x, 195, "Heute", 30, 1,1,1,1)
-    CONFIG.font:write(line_x, 195, "Linie", 30, 1,1,1,1)
-    CONFIG.font:write(offset_destination, 195, "Ziel", 30, 1,1,1,1)
-    CONFIG.font:write(track_x, 195, "Steig", 30, 1,1,1,1)
+    CONFIG.font:write(scheduled_x, 190+top_bar_padding, "Planmäßig", top_bar_font_size, 1,1,1,1)
+    CONFIG.font:write(actual_x, 190+top_bar_padding, "Heute", top_bar_font_size, 1,1,1,1)
+    CONFIG.font:write(line_x, 190+top_bar_padding, "Linie", top_bar_font_size, 1,1,1,1)
+    CONFIG.font:write(offset_destination, 190+top_bar_padding, "Ziel", top_bar_font_size, 1,1,1,1)
+    CONFIG.font:write(track_x, 190+top_bar_padding, "Steig", top_bar_font_size, 1,1,1,1)
+
+    local y = 200+top_bar_font_size+top_bar_padding*2
 
     now_offset = now + (CONFIG.offset * 60)
 
