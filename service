@@ -41,13 +41,13 @@ def regenerate():
 
         for departure in stop_info['Departure']:
             try:
-                stop = re.sub('^('+remove+'[- ])', '', departure['stop'])
-                direction = re.sub('^('+remove+'[- ])', '', departure['direction'])
+                stop = re.sub('^('+remove+'[- ])', '', departure['stop'].encode('utf-8'))
+                direction = re.sub('^('+remove+'[- ])', '', departure['direction'].encode('utf-8'))
                 track = departure.get('track', '').strip()
                 scheduled = datetime.strptime(departure['date'] + ' ' + departure['time'], '%Y-%m-%d %H:%M:%S')
 
                 if not stop_name:
-                    stop_name = stop
+                    stop_name = stop.decode('utf-8')
 
                 leave_time = None
                 delay = 0
@@ -68,7 +68,7 @@ def regenerate():
                     delay = int(diff.total_seconds()/60)
 
                 departures['{} {} {}'.format(leave_time or scheduled, line_no, direction)] = {
-                    'direction': direction,
+                    'direction': direction.decode('utf-8'),
                     'line_no': str(line_no),
                     'category': category,
                     'track': track,
@@ -77,7 +77,8 @@ def regenerate():
                     'timestamp': to_unixtimestamp(leave_time or scheduled),
                 }
             except Exception as e:
-                log(repr(e))
+                traceback.print_exc()
+                #log(repr(e))
 
         return departures, stop_name
 
