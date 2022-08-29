@@ -54,7 +54,7 @@
         "type": "font",
         "default": "silkscreen.ttf"
     }, {
-        "title": "Font (für Echtzeitdaten)",
+        "title": "Schriftart (für Echtzeitdaten)",
         "ui_width": 6,
         "name": "font_actual",
         "type": "font",
@@ -64,19 +64,19 @@
         "ui_width": 6,
         "name": "font_size",
         "type": "integer",
-        "default": "50"
+        "default": 50
     }, {
         "title": "Schriftgröße (Haltestellenname)",
         "ui_width": 6,
         "name": "font_size_station",
         "type": "integer",
-        "default": "80"
+        "default": 80
     }, {
         "title": "Intervall (in Sekunden)",
         "ui_width": 6,
         "name": "duration",
         "type": "integer",
-        "default": "10",
+        "default": 10,
         "hint": "Wenn mehrere Haltestellen angegeben werden, wechsle in diesem Intervall zwischen den Haltestellen"
     }]
 }
