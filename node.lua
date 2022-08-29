@@ -41,6 +41,12 @@ function draw_schedule()
     local divisor = #departures*CONFIG.duration
     local dep_step = math.floor((sys.now() % divisor)/CONFIG.duration)+1
 
+    local offset_scheduled = CONFIG.font_size*3
+    local offset_actual = CONFIG.font_size*7
+    local offset_line = CONFIG.font_size*11
+    local offset_destination = offset_line + 20
+    local offset_track = NATIVE_WIDTH-(CONFIG.font_size*3)
+
     deps = departures[dep_step]
 
     stop_string = deps.name
@@ -56,15 +62,15 @@ function draw_schedule()
     line_width = CONFIG.font:width("Linie", 30)
     track_width = CONFIG.font:width("Steig", 30)
 
-    scheduled_x = 100-(scheduled_width/2)
-    actual_x = 300-(actual_width/2)
-    line_x = 530-line_width
-    track_x = NATIVE_WIDTH-100-(track_width/2)
+    scheduled_x = offset_scheduled-(scheduled_width/2)
+    actual_x = offset_actual-(actual_width/2)
+    line_x = offset_line-line_width
+    track_x = offset_track-(track_width/2)
 
     CONFIG.font:write(scheduled_x, 195, "Planmäßig", 30, 1,1,1,1)
     CONFIG.font:write(actual_x, 195, "Heute", 30, 1,1,1,1)
     CONFIG.font:write(line_x, 195, "Linie", 30, 1,1,1,1)
-    CONFIG.font:write(550, 195, "Ziel", 30, 1,1,1,1)
+    CONFIG.font:write(offset_destination, 195, "Ziel", 30, 1,1,1,1)
     CONFIG.font:write(track_x, 195, "Steig", 30, 1,1,1,1)
 
     now_offset = now + (CONFIG.offset * 60)
@@ -84,15 +90,15 @@ function draw_schedule()
             line_width = CONFIG.font_actual:width(dep.line_no, CONFIG.font_size)
             track_width = CONFIG.font:width(dep.track, CONFIG.font_size)
 
-            scheduled_x = 100-(scheduled_width/2)
-            actual_x = 300-(actual_width/2)
-            line_x = 530-line_width
-            track_x = NATIVE_WIDTH-100-(track_width/2)
+            scheduled_x = offset_scheduled-(scheduled_width/2)
+            actual_x = offset_actual-(actual_width/2)
+            line_x = offset_line-line_width
+            track_x = offset_track-(track_width/2)
 
             CONFIG.font:write(scheduled_x, y, dep.scheduled, CONFIG.font_size, 0,0,0,1)
             CONFIG.font_actual:write(actual_x, y, dep.actual, CONFIG.font_size, 0,0.4,0,5)
             CONFIG.font:write(line_x, y, dep.line_no, CONFIG.font_size, 0,0,0,1)
-            CONFIG.font:write(550, y, dep.direction, CONFIG.font_size, 0,0,0,1)
+            CONFIG.font:write(offset_destination, y, dep.direction, CONFIG.font_size, 0,0,0,1)
             CONFIG.font:write(track_x, y, dep.track, CONFIG.font_size, 0,0,0,1)
 
             y = y+20+CONFIG.font_size
