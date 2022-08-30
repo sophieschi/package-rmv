@@ -33,9 +33,9 @@ function draw_schedule()
     stop_sign:draw(20, 20, 150, 150)
 
     time_string = os.date("%H:%M", now)
-    time_width = CONFIG.font:width(time_string, CONFIG.font_size)
+    time_width = CONFIG.font:width(time_string, CONFIG.font_size_clock)
     time_x = NATIVE_WIDTH-20-time_width
-    CONFIG.font:write(time_x, 20, time_string, CONFIG.font_size, 1,1,1,1)
+    CONFIG.font:write(time_x, 20, time_string, CONFIG.font_size_clock, 1,1,1,1)
 
     local divisor = #departures*CONFIG.duration
     local dep_step = math.floor((sys.now() % divisor)/CONFIG.duration)+1

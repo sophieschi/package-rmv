@@ -61,16 +61,22 @@
         "default": "silkscreen.ttf"
     }, {
         "title": "Schriftgröße (allgemein)",
-        "ui_width": 6,
+        "ui_width": 4,
         "name": "font_size",
         "type": "integer",
         "default": 50
     }, {
         "title": "Schriftgröße (Haltestellenname)",
-        "ui_width": 6,
+        "ui_width": 4,
         "name": "font_size_station",
         "type": "integer",
         "default": 80
+    }, {
+        "title": "Schriftgröße (Uhrzeit)",
+        "ui_width": 4,
+        "name": "font_size_clock",
+        "type": "integer",
+        "default": 50
     }, {
         "title": "Intervall (in Sekunden)",
         "ui_width": 6,
