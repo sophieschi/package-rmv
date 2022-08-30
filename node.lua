@@ -30,15 +30,13 @@ function draw_schedule()
     local now = unixnow()
     local color = 0
 
-    stop_sign:draw(20, 20, 150, 150)
-
     time_string = os.date("%H:%M", now)
     time_width = CONFIG.font:width(time_string, CONFIG.font_size_clock)
     time_x = NATIVE_WIDTH-20-time_width
     CONFIG.font:write(time_x, 20, time_string, CONFIG.font_size_clock, 1,1,1,1)
 
-    local divisor = #departures*CONFIG.duration
-    local dep_step = math.floor((sys.now() % divisor)/CONFIG.duration)+1
+    divisor = #departures*CONFIG.duration
+    dep_step = math.floor((sys.now() % divisor)/CONFIG.duration)+1
 
     deps = departures[dep_step]
 
@@ -48,16 +46,26 @@ function draw_schedule()
     local offset_destination = offset_line + 20
     local offset_track = NATIVE_WIDTH-(CONFIG.font_size*3)
 
-    local top_bar_font_size = math.floor(CONFIG.font_size*0.6)
-    local top_bar_padding = math.floor(CONFIG.font_size*0.2)
+    top_bar_font_size = math.floor(CONFIG.font_size*0.6)
+    top_bar_padding = math.floor(CONFIG.font_size*0.2)
+
+    local stop_y = 95-(CONFIG.font_size_station/2)
+    local accent_starts_at = 190
+
+    if CONFIG.font_size_station*2 < 150 then
+        stop_sign:draw(20, 20, CONFIG.font_size_station*2, CONFIG.font_size_station*2)
+        stop_y = 20+(CONFIG.font_size_station/2)
+        accent_starts_at = 40+CONFIG.font_size_station*2
+    else
+        stop_sign:draw(20, 20, 150, 150)
+    end
 
     stop_string = deps.name
     stop_width = CONFIG.font:width(stop_string, CONFIG.font_size_station)
     stop_x = ((NATIVE_WIDTH-190-time_width)/2)-(stop_width/2)
-    stop_y = 95-(CONFIG.font_size_station/2)
     CONFIG.font:write(stop_x+160, stop_y, stop_string, CONFIG.font_size_station, 1,1,1,1)
 
-    accent_base:draw(0, 190, NATIVE_WIDTH, 190+top_bar_font_size+top_bar_padding*2)
+    accent_base:draw(0, accent_starts_at, NATIVE_WIDTH, 190+top_bar_font_size+top_bar_padding*2)
 
     scheduled_width = CONFIG.font:width("Planmäßig", top_bar_font_size)
     actual_width = CONFIG.font:width("Heute", top_bar_font_size)
@@ -69,13 +77,13 @@ function draw_schedule()
     line_x = offset_line-line_width
     track_x = offset_track-(track_width/2)
 
-    CONFIG.font:write(scheduled_x, 190+top_bar_padding, "Planmäßig", top_bar_font_size, 1,1,1,1)
-    CONFIG.font:write(actual_x, 190+top_bar_padding, "Heute", top_bar_font_size, 1,1,1,1)
-    CONFIG.font:write(line_x, 190+top_bar_padding, "Linie", top_bar_font_size, 1,1,1,1)
+    CONFIG.font:write(scheduled_x, accent_starts_at+top_bar_padding, "Planmäßig", top_bar_font_size, 1,1,1,1)
+    CONFIG.font:write(actual_x, accent_starts_at+top_bar_padding, "Heute", top_bar_font_size, 1,1,1,1)
+    CONFIG.font:write(line_x, accent_starts_at+top_bar_padding, "Linie", top_bar_font_size, 1,1,1,1)
     CONFIG.font:write(offset_destination, 190+top_bar_padding, "Ziel", top_bar_font_size, 1,1,1,1)
     CONFIG.font:write(track_x, 190+top_bar_padding, "Steig", top_bar_font_size, 1,1,1,1)
 
-    local y = 200+top_bar_font_size+top_bar_padding*2
+    local y = accent_starts_at+10+top_bar_font_size+top_bar_padding*2
 
     now_offset = now + (CONFIG.offset * 60)
 
