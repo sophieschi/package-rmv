@@ -2,17 +2,17 @@ util.init_hosted()
 
 local json = require "json"
 local departures = {}
-local rotate_before = nil
-local transform = nil
+local stop_sign = resource.load_image("stvo_224.png")
+local white = resource.create_colored_texture(1,1,1,1)
+local gray = resource.create_colored_texture(0.8,0.8,0.8,1)
+local accent_base = resource.create_colored_texture(0,0.4,0,5)
+local base_time = N.base_time or 0
 
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
 util.file_watch("departures.json", function(content)
     departures = json.decode(content)
 end)
-
-local white = resource.create_colored_texture(1,1,1,1)
-local base_time = N.base_time or 0
 
 util.data_mapper{
     ["clock/set"] = function(time)
@@ -25,186 +25,113 @@ local function unixnow()
     return base_time + sys.now()
 end
 
-local colored = resource.create_shader[[
-    uniform vec4 color;
-    void main() {
-        gl_FragColor = color;
-    }
-]]
-
-local fadeout = 5
-local categories = {}
-categories[0] = resource.load_image("fern.png")
-categories[1] = resource.load_image("fern.png")
-categories[2] = resource.load_image("regio.png")
-categories[3] = resource.load_image("sbahn.png")
-categories[4] = resource.load_image("ubahn.png")
-categories[5] = resource.load_image("tram.png")
-categories[6] = resource.load_image("bus.png")
-
-function node.render()
-    if rotate_before ~= CONFIG.rotate then
-        transform = util.screen_transform(CONFIG.rotate)
-        rotate_before = CONFIG.rotate
-    end
-
-    if rotate_before == 90 or rotate_before == 270 then
-        real_width = NATIVE_HEIGHT
-        real_height = NATIVE_WIDTH
-    else
-        real_width = NATIVE_WIDTH
-        real_height = NATIVE_HEIGHT
-    end
-    transform()
-    CONFIG.background_color.clear()
+function draw_schedule()
+    gl.clear(0,0,0,1)
     local now = unixnow()
-    local y = 0
-    local now_for_fade = now + (CONFIG.offset * 60)
+    local color = 0
 
-    for idx, dep in ipairs(departures) do
-        if dep.date > now_for_fade - fadeout then
-            if now_for_fade > dep.date then
-                y = y - 130 / fadeout * (now_for_fade - dep.date)
-            end
-        end
+    time_string = os.date("%H:%M", now)
+    time_width = CONFIG.font:width(time_string, CONFIG.font_size_clock)
+    time_x = NATIVE_WIDTH-20-time_width
+    CONFIG.font:write(time_x, 20, time_string, CONFIG.font_size_clock, 1,1,1,1)
+
+    divisor = #departures*CONFIG.duration
+    dep_step = math.floor((sys.now() % divisor)/CONFIG.duration)+1
+
+    deps = departures[dep_step]
+
+    local offset_scheduled = CONFIG.font_size*3
+    local offset_actual = CONFIG.font_size*7
+    local offset_line = CONFIG.font_size*11
+    local offset_destination = offset_line + 20
+    local offset_track = NATIVE_WIDTH-(CONFIG.font_size*3)
+
+    top_bar_font_size = math.floor(CONFIG.font_size*0.6)
+    top_bar_padding = math.floor(CONFIG.font_size*0.2)
+
+    local stop_y = 95-(CONFIG.font_size_station/2)
+    local accent_starts_at = 190
+
+    if CONFIG.font_size_station*2 < 150 then
+        stop_sign:draw(20, 20, CONFIG.font_size_station*2, CONFIG.font_size_station*2)
+        stop_y = 20+(CONFIG.font_size_station/2)
+        accent_starts_at = 40+CONFIG.font_size_station*2
+    else
+        stop_sign:draw(20, 20, 150, 150)
     end
-    for idx, dep in ipairs(departures) do
-        if dep.date > now_for_fade - fadeout then
-            local time = dep.nice_date
 
-            local remaining = math.floor((dep.date - now) / 60)
-            local append = ""
-            local platform = ""
-            local x = 0
+    stop_string = deps.name
+    stop_width = CONFIG.font:width(stop_string, CONFIG.font_size_station)
+    stop_x = ((NATIVE_WIDTH-190-time_width)/2)-(stop_width/2)
+    CONFIG.font:write(stop_x+160, stop_y, stop_string, CONFIG.font_size_station, 1,1,1,1)
 
-            if remaining < 0 then
-                time = "In der Vergangenheit"
-                if dep.next_date then
-                    append = string.format("und in %d min", math.floor((dep.next_date - now)/60))
-                end
-            elseif remaining < 1 then
-                if now % 2 < 1 then
-                    time = "*jetzt"
-                else
-                    time = "jetzt*"
-                end
-                if dep.next_date then
-                    append = string.format("und in %d min", math.floor((dep.next_date - now)/60))
-                end
-            elseif remaining < 10 then
-                time = string.format("in %d min", ((dep.date - now)/60))
-                if dep.next_nice_date then
-                    append = "und wieder " .. math.floor((dep.next_date - dep.date)/60) .. " min später"
-                end
+    accent_base:draw(0, accent_starts_at, NATIVE_WIDTH, 190+top_bar_font_size+top_bar_padding*2)
+
+    scheduled_width = CONFIG.font:width("Planmäßig", top_bar_font_size)
+    actual_width = CONFIG.font:width("Heute", top_bar_font_size)
+    line_width = CONFIG.font:width("Linie", top_bar_font_size)
+    track_width = CONFIG.font:width("Steig", top_bar_font_size)
+
+    scheduled_x = offset_scheduled-(scheduled_width/2)
+    actual_x = offset_actual-(actual_width/2)
+    line_x = offset_line-line_width
+    track_x = offset_track-(track_width/2)
+
+    CONFIG.font:write(scheduled_x, accent_starts_at+top_bar_padding, "Planmäßig", top_bar_font_size, 1,1,1,1)
+    CONFIG.font:write(actual_x, accent_starts_at+top_bar_padding, "Heute", top_bar_font_size, 1,1,1,1)
+    CONFIG.font:write(line_x, accent_starts_at+top_bar_padding, "Linie", top_bar_font_size, 1,1,1,1)
+    CONFIG.font:write(offset_destination, 190+top_bar_padding, "Ziel", top_bar_font_size, 1,1,1,1)
+    CONFIG.font:write(track_x, 190+top_bar_padding, "Steig", top_bar_font_size, 1,1,1,1)
+
+    local y = accent_starts_at+10+top_bar_font_size+top_bar_padding*2
+
+    now_offset = now + (CONFIG.offset * 60)
+
+    for idx, dep in ipairs(deps.departures) do
+        if dep.timestamp > now_offset then
+            if color == 0 then
+                white:draw(0, y-10, NATIVE_WIDTH, y+10+CONFIG.font_size)
+                color = 1
             else
-                time = time -- .. " +" .. remaining
-                if dep.next_nice_date then
-                    append = "und wieder " .. dep.next_nice_date
-                end
+                gray:draw(0, y-10, NATIVE_WIDTH, y+10+CONFIG.font_size)
+                color = 0
             end
 
-            if string.match(CONFIG.stop, ',') then
-                platform = " von " .. dep.stop
-                if dep.platform ~= "" then
-                    platform = platform .. ", Hst " .. dep.platform
-                end
-            else
-                if dep.platform ~= "" then
-                    platform = " von " .. dep.platform
-                end
-            end
-            stop_r, stop_g, stop_b = 1,1,1
+            scheduled_width = CONFIG.font:width(dep.scheduled, CONFIG.font_size)
+            actual_width = CONFIG.font_actual:width(dep.actual, CONFIG.font_size)
+            line_width = CONFIG.font_actual:width(dep.line_no, CONFIG.font_size)
+            track_width = CONFIG.font:width(dep.track, CONFIG.font_size)
 
-            line_height = CONFIG.line_height
-            margin_bottom = CONFIG.line_height * 0.1
+            scheduled_x = offset_scheduled-(scheduled_width/2)
+            actual_x = offset_actual-(actual_width/2)
+            line_x = offset_line-line_width
+            track_x = offset_track-(track_width/2)
 
-            if remaining < 10 then
-                icon_size = line_height * 0.66
-                text_upper_size = line_height * 0.5
-                text_lower_size = line_height * 0.3
-                symbol_height = text_upper_size + text_lower_size + margin_bottom
+            CONFIG.font:write(scheduled_x, y, dep.scheduled, CONFIG.font_size, 0,0,0,1)
+            CONFIG.font_actual:write(actual_x, y, dep.actual, CONFIG.font_size, 0,0.4,0,5)
+            CONFIG.font:write(line_x, y, dep.line_no, CONFIG.font_size, 0,0,0,1)
+            CONFIG.font:write(offset_destination, y, dep.direction, CONFIG.font_size, 0,0,0,1)
+            CONFIG.font:write(track_x, y, dep.track, CONFIG.font_size, 0,0,0,1)
 
-                if CONFIG.showtype then
-                    categories[tonumber(dep.category)]:draw(0, y, icon_size, y+icon_size)
-                    x = icon_size + 20
-                end
+            y = y+20+CONFIG.font_size
 
-                colored:use{color = {dep.color_r, dep.color_g, dep.color_b, 1}}
-                white:draw(x,y, x + 150, y + symbol_height)
-                colored:deactivate()
-
-                local symbol_width = CONFIG.font:width(dep.symbol, icon_size)
-                if symbol_width < 150 then
-                    symbol_margin_top = (symbol_height - icon_size) / 2
-                    CONFIG.font:write(x + 75 - symbol_width/2, y+symbol_margin_top, dep.symbol, icon_size, dep.font_r, dep.font_g, dep.font_b,1)
-                else
-                    size = icon_size
-                    while CONFIG.font:width(dep.symbol, size) > 145 do
-                        size = size - 2
-                    end
-                    symbol_margin_top = (symbol_height - size) / 2
-                    symbol_width = CONFIG.font:width(dep.symbol, size)
-                    CONFIG.font:write(x + 75 - symbol_width/2, y+symbol_margin_top, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
-                end
-
-                text_y = y + (margin_bottom * 0.5)
-                CONFIG.font:write(x + 170, text_y, dep.direction, text_upper_size, stop_r,stop_g,stop_b, 1)
-                text_y = text_y + text_upper_size
-                CONFIG.font:write(x + 170, text_y, time .. platform .. " " .. append , text_lower_size, 1,1,1,1)
-            else
-                line_height = line_height * 0.8
-                icon_size = line_height * 0.66
-                text_upper_size = line_height * 0.5
-                text_lower_size = line_height * 0.3
-                symbol_height = text_upper_size + text_lower_size + margin_bottom
-
-                x = 0 --line_height * 0.34
-
-                if CONFIG.showtype then
-                    categories[tonumber(dep.category)]:draw(0, y, icon_size, y+icon_size)
-                    x = x + icon_size + 20
-                end
-
-                colored:use{color = {dep.color_r, dep.color_g, dep.color_b, 1}}
-                white:draw(x, y, x + 100,y + symbol_height)
-                colored:deactivate()
-                local symbol_width = CONFIG.font:width(dep.symbol, icon_size)
-                if symbol_width < 100 then
-                    symbol_margin_top = (symbol_height - icon_size) / 2
-                    CONFIG.font:write(x + 50 - symbol_width/2, y + symbol_margin_top, dep.symbol, icon_size, dep.font_r, dep.font_g, dep.font_b,1)
-                else
-                    size = icon_size
-                    while CONFIG.font:width(dep.symbol, size) > 95 do
-                        size = size - 2
-                    end
-                    symbol_margin_top = (symbol_height - size) / 2
-                    symbol_width = CONFIG.font:width(dep.symbol, size)
-                    CONFIG.font:write(x + 50 - symbol_width/2, y+symbol_margin_top, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
-                end
-
-                CONFIG.font:write(x + 120, y + ((symbol_height - icon_size) / 2), time , icon_size, 1,1,1,1)
-
-                time_width = icon_size * 3.5
-
-                text_y = y + (margin_bottom * 0.5)
-                CONFIG.font:write(x + 120 + time_width, text_y, dep.direction, text_upper_size, stop_r,stop_g,stop_b,1)
-                text_y = text_y + text_upper_size
-                CONFIG.font:write(x + 120 + time_width, text_y, append, text_lower_size, 1,1,1,1)
-            end
-
-            y = y + symbol_height + margin_bottom
-
-            if y > real_height then
+            if y > NATIVE_HEIGHT then
                 break
             end
         end
     end
+end
 
-    --colored:use{color = {0, 0, 0, 1}}
-    --white:draw(0, 0, NATIVE_WIDTH, 120)
+function node.render()
+    gl.clear(0,0,0,1)
 
-    --time_string = os.date("%Y-%m-%d %H:%M:%S", now)
-    --time_width = CONFIG.font:width(time_string, 100)
-    --time_x = (NATIVE_WIDTH/2)-(time_width/2)
-    --CONFIG.font:write(time_x, 10, time_string, 100, 1,1,1,1)
+    if CONFIG.upside_down then
+        gl.pushMatrix()
+        gl.translate(NATIVE_WIDTH, NATIVE_HEIGHT)
+        gl.rotate(180, 0, 0, 1)
+        draw_schedule()
+        gl.popMatrix()
+    else
+        draw_schedule()
+    end
 end
