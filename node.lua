@@ -74,7 +74,7 @@ function node.render()
 
     for idx, dep in ipairs(departures) do
         if dep.date > now_for_fade - fadeout then
-            if y < 0 and dep.date >= now then
+            if y < 0 and dep.date >= now_for_fade then
                 y = 0
             end
 
