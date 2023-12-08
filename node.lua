@@ -99,7 +99,7 @@ function node.render()
                 if dep.next_date then
                     append = string.format("und in %d min", math.floor((dep.next_date - now)/60))
                 end
-            elseif remaining < 10 then
+            elseif remaining < 11 then
                 time = string.format("in %d min", ((dep.date - now)/60))
                 if dep.next_nice_date then
                     append = "und wieder " .. math.floor((dep.next_date - dep.date)/60) .. " min später"
