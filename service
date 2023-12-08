@@ -18,7 +18,7 @@ CONFIG.restart_on_update()
 minutes = re.compile("([0-9]+) min")
 exact = re.compile("([0-9]+):([0-9]+)")
 
-request_minutes = 30
+request_minutes = 180
 
 
 def log(msg):
@@ -362,7 +362,7 @@ def regenerate():
         departures_per_minute = len(departures)/float(request_minutes)
         departures_height = len(departures)*70
 
-        log('there are {} departures per minute, filling {} pixels currently (want {})'.format(departures_per_minute, departures_height, screen_height))
+        log('there are {} departures per minute, filling approximately {} pixels currently (want {})'.format(departures_per_minute, departures_height, screen_height))
 
         if departures_height < screen_height:
             # This assumes we get an equal amount of departures per minute
@@ -376,10 +376,13 @@ def regenerate():
             # Let's re-calculate the amount of departures we need, because we
             # don't want to request lots of data that will never be shown.
             # The inner if is needed to avoid calculating the minutes over and
-            # over, if a 30 minute request gets us more than double our screen
+            # over, if a 180 minute request gets us more than double our screen
             # height of data.
-            if request_minutes > 30:
-                request_minutes = calculate_request_minutes(departures_per_minute, 30)
+            # We use 180 minutes (three hours) here, so we always get enough
+            # data to show "and in X minutes" (assuming noone will run buses
+            # less than "every 3 hours").
+            if request_minutes > 180:
+                request_minutes = calculate_request_minutes(departures_per_minute, 180)
 
         log('new request_minutes is {}'.format(request_minutes))
 
