@@ -112,13 +112,13 @@ function node.render()
             end
 
             if string.match(CONFIG.stop, ',') then
-                platform = " von " .. dep.stop
+                platform = "von " .. dep.stop
                 if dep.platform ~= "" then
                     platform = platform .. ", Hst " .. dep.platform
                 end
             else
                 if dep.platform ~= "" then
-                    platform = " von " .. dep.platform
+                    platform = "von " .. dep.platform
                 end
             end
             stop_r, stop_g, stop_b = 1,1,1
@@ -154,8 +154,15 @@ function node.render()
 
                 text_y = y + (margin_bottom * 0.5)
                 CONFIG.font:write(x + 170, text_y, dep.direction, text_upper_size, stop_r,stop_g,stop_b, 1)
-                text_y = text_y + text_upper_size
-                CONFIG.font:write(x + 170, text_y, time .. platform .. " " .. append , text_lower_size, 1,1,1,1)
+                if CONFIG.large_minutes then
+                    local time_width = CONFIG.font:width(time, text_upper_size)
+                    CONFIG.font:write(real_width - time_width, text_y, time, text_upper_size, stop_r,stop_g,stop_b, 1)
+                    text_y = text_y + text_upper_size
+                    CONFIG.font:write(x + 170, text_y, platform .. " " .. append , text_lower_size, 1,1,1,1)
+                else
+                    text_y = text_y + text_upper_size
+                    CONFIG.font:write(x + 170, text_y, time .. " " .. platform .. " " .. append , text_lower_size, 1,1,1,1)
+                end
             else
                 this_line_height = line_height * 0.8
                 icon_size = this_line_height * 0.66

@@ -35,11 +35,11 @@
         "ui_width": 12
     }, {
         "title": "Removed String",
-        "ui_width": 8,
+        "ui_width": 12,
         "name": "remove",
         "type": "string",
         "default": "Wiesbaden",
-        "hint": "String which is removed from stop names and destinations"
+        "hint": "String which is removed from stop names and destinations (regex possible)"
     }, {
         "title": "Rotation",
         "ui_width": 4,
@@ -59,6 +59,13 @@
         "name": "showtype",
         "type": "boolean",
         "default": true
+    }, {
+        "title": "Large Minutes",
+        "ui_width": 4,
+        "name": "large_minutes",
+        "type": "boolean",
+        "default": true,
+        "hint": "Show 'in X minutes' in large font on the right, instead of small print in the info line"
     }, {
         "title": "Time Offset in minutes",
         "ui_width": 6,
