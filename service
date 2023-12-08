@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 import hashlib
 import json
-import pytz
 import re
 import sys
 import time
 import traceback
-import urllib2
 from datetime import datetime, timedelta
 from itertools import islice
 
-from hosted import CONFIG, NODE, DEVICE
+import pytz
+import urllib2
+
+from hosted import CONFIG, DEVICE, NODE
 
 CONFIG.restart_on_update()
 
@@ -19,8 +20,10 @@ exact = re.compile("([0-9]+):([0-9]+)")
 
 request_minutes = 30
 
+
 def log(msg):
     print >>sys.stderr, "[rmv] %s" % msg
+
 
 def rgb2hsv(r, g, b):
     r, g, b = r/255.0, g/255.0, b/255.0
@@ -42,6 +45,7 @@ def rgb2hsv(r, g, b):
         v = mx
     return h, s, v
 
+
 def current_time():
     timezone = pytz.timezone("Europe/Berlin")
     now = datetime.utcnow()
@@ -50,8 +54,10 @@ def current_time():
     now = now.replace(tzinfo=None)
     return now
 
+
 def to_unixtimestamp(dt):
     return int(time.mktime(dt.timetuple()))
+
 
 def regenerate():
     global request_minutes
@@ -207,7 +213,6 @@ def regenerate():
                     catCode = product['catCode']
                     operatorCode = product.get('operatorCode', None)
                     break
-
 
             font_r, font_g, font_b = (1, 1, 1)
             if operatorCode in mapping:
@@ -378,8 +383,10 @@ def regenerate():
     with file("departures.json", "wb") as f:
         f.write(json.dumps(departures,ensure_ascii=False).encode("utf8"))
 
+
 def send_clock():
     NODE['/clock/set'](to_unixtimestamp(current_time()))
+
 
 def idle(seconds):
     end = time.time() + seconds
@@ -410,6 +417,7 @@ def main():
         except Exception:
             traceback.print_exc()
             time.sleep(30)
+
 
 if __name__ == "__main__":
     main()
