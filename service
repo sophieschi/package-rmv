@@ -311,38 +311,39 @@ def regenerate():
     # find next run
     for n, dep in enumerate(departures):
         for follow in islice(departures, n+1, None):
-            if dep['platform'] != "":
-                if dep['platform'] == follow['platform'] and \
-                        dep['stop'] == follow['stop'] and \
-                        dep['symbol'] == follow['symbol']:
-                    dep['next_date'] = follow['date']
-                    dep['next_nice_date'] = follow['nice_date']
-                    break
-            else:
-                if dep['direction'] == follow['direction'] and \
-                        dep['stop'] == follow['stop'] and \
-                        dep['symbol'] == follow['symbol']:
-                    dep['next_date'] = follow['date']
-                    dep['next_nice_date'] = follow['nice_date']
-                    break
+            if (
+                (
+                    dep['platform'] == follow['platform']
+                    or dep['platform'] == ""
+                )
+                and dep['stop'] == follow['stop']
+                and dep['symbol'] == follow['symbol']
+            ):
+                dep['next_date'] = follow['date']
+                dep['next_nice_date'] = follow['nice_date']
+                break
 
     # find duplicates
     for n, dep in enumerate(departures):
         for follow in islice(departures, n+1, None):
-            if dep['direction'] == follow['direction'] and \
-                    dep['stop'] != follow['stop'] and \
-                    dep['symbol'] == follow['symbol'] and \
-                    abs(dep['date'] - follow['date']) < 5 * 60:
-                print "duplicate:"
-                print dep
-                print follow
-                print
+            if (
+                dep['direction'] == follow['direction']
+                and dep['symbol'] == follow['symbol']
+                and (
+                    (
+                        dep['stop'] != follow['stop']
+                        and abs(dep['date'] - follow['date']) < 120
+                    )
+                    or (
+                        dep['stop'] == follow['stop']
+                        and abs(dep['date'] - follow['date']) < 10
+                    )
+                )
+            ):
                 dep['duplicate'] = True
                 break
 
     departures = [dep for dep in departures if not 'duplicate' in dep]
-
-    # pprint(departures, width=300)
 
     # Now that we know the departure list, we can calculate if we actually
     # have enough departures to fill the whole screen. If not, we calculate
