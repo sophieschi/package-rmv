@@ -395,6 +395,10 @@ def idle(seconds):
         time.sleep(5)
 
 def main():
+    # when restarting, we already have old data available. send clock
+    # first so next departures get shown correctly
+    send_clock()
+
     while 1:
         try:
             regenerate()
