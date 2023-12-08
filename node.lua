@@ -61,15 +61,23 @@ function node.render()
     local y = 0
     local now_for_fade = now + (CONFIG.offset * 60)
 
+    local line_height = CONFIG.line_height
+    local margin_bottom = CONFIG.line_height * 0.1
+
     for idx, dep in ipairs(departures) do
         if dep.date > now_for_fade - fadeout then
             if now_for_fade > dep.date then
-                y = y - 130 / fadeout * (now_for_fade - dep.date)
+                y = (y - line_height - margin_bottom) / fadeout * (now_for_fade - dep.date)
             end
         end
     end
+
     for idx, dep in ipairs(departures) do
         if dep.date > now_for_fade - fadeout then
+            if y < 0 and dep.date >= now then
+                y = 0
+            end
+
             local time = dep.nice_date
 
             local remaining = math.floor((dep.date - now) / 60)
@@ -115,10 +123,7 @@ function node.render()
             end
             stop_r, stop_g, stop_b = 1,1,1
 
-            line_height = CONFIG.line_height
-            margin_bottom = CONFIG.line_height * 0.1
-
-            if remaining < 10 then
+            if remaining < 11 then
                 icon_size = line_height * 0.66
                 text_upper_size = line_height * 0.5
                 text_lower_size = line_height * 0.3
@@ -152,10 +157,10 @@ function node.render()
                 text_y = text_y + text_upper_size
                 CONFIG.font:write(x + 170, text_y, time .. platform .. " " .. append , text_lower_size, 1,1,1,1)
             else
-                line_height = line_height * 0.8
-                icon_size = line_height * 0.66
-                text_upper_size = line_height * 0.5
-                text_lower_size = line_height * 0.3
+                this_line_height = line_height * 0.8
+                icon_size = this_line_height * 0.66
+                text_upper_size = this_line_height * 0.5
+                text_lower_size = this_line_height * 0.3
                 symbol_height = text_upper_size + text_lower_size + margin_bottom
 
                 x = 0 --line_height * 0.34
