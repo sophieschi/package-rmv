@@ -214,21 +214,25 @@ def regenerate():
                     operatorCode = product.get('operatorCode', None)
                     break
 
-            font_r, font_g, font_b = (1, 1, 1)
-            if operatorCode in mapping:
-                r, g, b = mapping[operatorCode].get(symbol, (0.1,0.1,0.1)) 
-                h, s, v = rgb2hsv(r*255, g*255, b*255)
-                if v > 0.75:
-                    font_r, font_g, font_b = (0, 0, 0)
-            elif catCode == '0':
-                r, g, b = (1, 1, 1)
-                font_r, font_g, font_b = from_hex('c1121c')
+            if CONFIG['colored_lines']:
+                font_r, font_g, font_b = (1, 1, 1)
+                if operatorCode in mapping:
+                    r, g, b = mapping[operatorCode].get(symbol, (0.1,0.1,0.1)) 
+                    h, s, v = rgb2hsv(r*255, g*255, b*255)
+                    if v > 0.75:
+                        font_r, font_g, font_b = (0, 0, 0)
+                elif catCode == '0':
+                    r, g, b = (1, 1, 1)
+                    font_r, font_g, font_b = from_hex('c1121c')
+                else:
+                    name_hash = hashlib.md5(name).hexdigest()
+                    r, g, b = from_hex(name_hash[:6])
+                    h, s, v = rgb2hsv(r*255, g*255, b*255)
+                    if v > 0.75:
+                        font_r, font_g, font_b = (0, 0, 0)
             else:
-                name_hash = hashlib.md5(name).hexdigest()
-                r, g, b = from_hex(name_hash[:6])
-                h, s, v = rgb2hsv(r*255, g*255, b*255)
-                if v > 0.75:
-                    font_r, font_g, font_b = (0, 0, 0)
+                font_r, font_g, font_b = (1, 1, 1)
+                r, g, b = (.3, .3, .3)
 
             direction = re.sub('^('+remove+'[- ])', '', departure['direction'])
             stop = re.sub('^('+remove+'[- ])', '', departure['stop'])

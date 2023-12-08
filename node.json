@@ -74,15 +74,22 @@
         "default": false,
         "hint": "Show 'in X minutes' in large font on the right, instead of small print in the info line"
     }, {
+        "title": "Colored lines",
+        "ui_width": 4,
+        "name": "colored_lines",
+        "type": "boolean",
+        "default": true,
+        "hint": "if deselected, lines will appear as grey box with white text"
+    }, {
         "title": "Time Offset in minutes",
-        "ui_width": 6,
+        "ui_width": 4,
         "name": "offset",
         "type": "integer",
         "default": 0,
         "hint": "offset to use when displaying departures (does „early fadeout“ to account for walking time to stop)"
     }, {
         "title": "Background",
-        "ui_width": 6,
+        "ui_width": 4,
         "name": "background_color",
         "type": "color",
         "default": [0,0,0,1]
