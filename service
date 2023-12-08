@@ -233,6 +233,9 @@ def regenerate():
             direction = re.sub('^('+remove+'[- ])', '', departure['direction'])
             stop = re.sub('^('+remove+'[- ])', '', departure['stop'])
 
+            if CONFIG['ignore_destination'] and re.match(CONFIG['ignore_destination'], direction):
+                continue
+
             track = departure['track'] if 'track' in departure else ""
 
             scheduled = datetime.strptime(departure['date'] + ' ' + departure['time'], '%Y-%m-%d %H:%M:%S')

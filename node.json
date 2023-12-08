@@ -34,12 +34,19 @@
         "type": "section",
         "ui_width": 12
     }, {
-        "title": "Removed String",
+        "title": "Remove string from destination",
         "ui_width": 12,
         "name": "remove",
         "type": "string",
         "default": "Wiesbaden",
-        "hint": "String which is removed from stop names and destinations (regex possible)"
+        "hint": "String which is removed from stop names and destinations"
+    }, {
+        "title": "Ignored destinations",
+        "ui_width": 12,
+        "name": "ignore_destination",
+        "type": "string",
+        "default": "",
+        "hint": "Filter out any transport where destination matches (matched after 'remove string from destination' - regex possible)"
     }, {
         "title": "Rotation",
         "ui_width": 4,
