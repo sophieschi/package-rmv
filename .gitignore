@@ -1,7 +1,8 @@
 departures.json
 config.json
-DejaVuSans.ttf
 *.xml
 *.pyc
 .venv
 *.swp
+*.ttf
+*.TTF
