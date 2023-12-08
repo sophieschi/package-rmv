@@ -84,19 +84,6 @@
         "name": "line_height",
         "title": "Line Height",
         "ui_width": 6,
-        "type": "select",
-        "options": [
-            [50, "50px"],
-            [60, "60px"],
-            [70, "70px"],
-            [80, "80px"],
-            [90, "90px"],
-            [100, "100px"],
-            [110, "110px"],
-            [120, "120px"],
-            [130, "130px"],
-            [140, "140px"],
-            [150, "150px"]
-        ]
+        "type": "integer"
     }]
 }
