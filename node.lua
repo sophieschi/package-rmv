@@ -62,7 +62,7 @@ function node.render()
     local now_for_fade = now + (CONFIG.offset * 60)
 
     local line_height = CONFIG.line_height
-    local margin_bottom = CONFIG.line_height * 0.1
+    local margin_bottom = CONFIG.line_height * 0.2
 
     for idx, dep in ipairs(departures) do
         if dep.date > now_for_fade - fadeout then
