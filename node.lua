@@ -156,9 +156,11 @@ function node.render()
                 CONFIG.font:write(x + 170, text_y, dep.direction, text_upper_size, stop_r,stop_g,stop_b, 1)
                 if CONFIG.large_minutes then
                     local time_width = CONFIG.font:width(time, text_upper_size)
+                    local text_width = CONFIG.font:width(platform .. " " .. append, text_lower_size)
+
                     CONFIG.font:write(real_width - time_width, text_y, time, text_upper_size, stop_r,stop_g,stop_b, 1)
                     text_y = text_y + text_upper_size
-                    CONFIG.font:write(x + 170, text_y, platform .. " " .. append , text_lower_size, 1,1,1,1)
+                    CONFIG.font:write(real_width - text_width, text_y, platform .. " " .. append , text_lower_size, 1,1,1,1)
                 else
                     text_y = text_y + text_upper_size
                     CONFIG.font:write(x + 170, text_y, time .. " " .. platform .. " " .. append , text_lower_size, 1,1,1,1)
