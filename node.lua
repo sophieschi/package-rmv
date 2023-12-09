@@ -196,14 +196,27 @@ function node.render()
                     CONFIG.font:write(x + 50 - symbol_width/2, y+symbol_margin_top, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
                 end
 
-                CONFIG.font:write(x + 120, y + ((symbol_height - icon_size) / 2), time , icon_size, 1,1,1,1)
+                --[[
+                    There are three columns (actually four, if we have
+                    the category icons showing, but these are always
+                    the same width).
 
-                time_width = icon_size * 3.5
+                    The line number always starts at 0, and is 100px
+                    wide. Following that, we allocate some space for the
+                    time of departure. The remainder of the width is
+                    given to the actual information about the departure,
+                    like the destination and information about follow-up
+                    departures.
+                --]]
+
+                local space_for_time = icon_size * 3.5
+                local time_width = CONFIG.font:width(time, icon_size)
+                CONFIG.font:write(x + space_for_time - (time_width / 2), y + ((symbol_height - icon_size) / 2), time , icon_size, 1,1,1,1)
 
                 text_y = y + (margin_bottom * 0.5)
-                CONFIG.font:write(x + 120 + time_width, text_y, dep.direction, text_upper_size, stop_r,stop_g,stop_b,1)
+                CONFIG.font:write(x + 100 + space_for_time, text_y, dep.direction, text_upper_size, stop_r,stop_g,stop_b,1)
                 text_y = text_y + text_upper_size
-                CONFIG.font:write(x + 120 + time_width, text_y, append, text_lower_size, 1,1,1,1)
+                CONFIG.font:write(x + 100 + space_for_time, text_y, append, text_lower_size, 1,1,1,1)
             end
 
             y = y + symbol_height + margin_bottom
