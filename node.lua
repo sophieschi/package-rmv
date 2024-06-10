@@ -72,6 +72,10 @@ function node.render()
         end
     end
 
+    local w_width = CONFIG.font:width('w', line_height * 0.5)
+    local large_box_width = w_width * 4
+    local small_box_width = w_width * 3
+
     for idx, dep in ipairs(departures) do
         if dep.date > now_for_fade - fadeout then
             if y < 0 and dep.date >= now_for_fade then
@@ -135,25 +139,26 @@ function node.render()
                 end
 
                 colored:use{color = {dep.color_r, dep.color_g, dep.color_b, 1}}
-                white:draw(x,y, x + 150, y + symbol_height)
+                white:draw(x,y, x + large_box_width, y + symbol_height)
                 colored:deactivate()
 
                 local symbol_width = CONFIG.font:width(dep.symbol, icon_size)
-                if symbol_width < 150 then
+                if symbol_width < large_box_width then
                     symbol_margin_top = (symbol_height - icon_size) / 2
-                    CONFIG.font:write(x + 75 - symbol_width/2, y+symbol_margin_top, dep.symbol, icon_size, dep.font_r, dep.font_g, dep.font_b,1)
+                    CONFIG.font:write(x + large_box_width/2 - symbol_width/2, y+symbol_margin_top, dep.symbol, icon_size, dep.font_r, dep.font_g, dep.font_b,1)
                 else
                     size = icon_size
-                    while CONFIG.font:width(dep.symbol, size) > 145 do
+                    while CONFIG.font:width(dep.symbol, size) > large_box_width do
                         size = size - 2
                     end
                     symbol_margin_top = (symbol_height - size) / 2
                     symbol_width = CONFIG.font:width(dep.symbol, size)
-                    CONFIG.font:write(x + 75 - symbol_width/2, y+symbol_margin_top, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
+                    CONFIG.font:write(x + large_box_width/2 - symbol_width/2, y+symbol_margin_top, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
                 end
 
                 text_y = y + (margin_bottom * 0.5)
-                CONFIG.font:write(x + 170, text_y, dep.direction, text_upper_size, stop_r,stop_g,stop_b, 1)
+                text_x = x + large_box_width + w_width
+                CONFIG.font:write(text_x, text_y, dep.direction, text_upper_size, stop_r,stop_g,stop_b, 1)
                 if CONFIG.large_minutes then
                     local time_width = CONFIG.font:width(time, text_upper_size)
                     local text_width = CONFIG.font:width(platform .. " " .. append, text_lower_size)
@@ -163,7 +168,7 @@ function node.render()
                     CONFIG.font:write(real_width - text_width, text_y, platform .. " " .. append , text_lower_size, 1,1,1,1)
                 else
                     text_y = text_y + text_upper_size
-                    CONFIG.font:write(x + 170, text_y, time .. " " .. platform .. " " .. append , text_lower_size, 1,1,1,1)
+                    CONFIG.font:write(text_x, text_y, time .. " " .. platform .. " " .. append , text_lower_size, 1,1,1,1)
                 end
             else
                 this_line_height = line_height * 0.8
@@ -182,20 +187,20 @@ function node.render()
 
                 -- line number
                 colored:use{color = {dep.color_r, dep.color_g, dep.color_b, 1}}
-                white:draw(x, y, x + 100,y + symbol_height)
+                white:draw(x, y, x + small_box_width, y + symbol_height)
                 colored:deactivate()
                 local symbol_width = CONFIG.font:width(dep.symbol, icon_size)
-                if symbol_width < 100 then
+                if symbol_width < small_box_width then
                     symbol_margin_top = (symbol_height - icon_size) / 2
-                    CONFIG.font:write(x + 50 - symbol_width/2, y + symbol_margin_top, dep.symbol, icon_size, dep.font_r, dep.font_g, dep.font_b,1)
+                    CONFIG.font:write(x + small_box_width/2 - symbol_width/2, y + symbol_margin_top, dep.symbol, icon_size, dep.font_r, dep.font_g, dep.font_b,1)
                 else
                     size = icon_size
-                    while CONFIG.font:width(dep.symbol, size) > 95 do
+                    while CONFIG.font:width(dep.symbol, size) > small_box_width do
                         size = size - 2
                     end
                     symbol_margin_top = (symbol_height - size) / 2
                     symbol_width = CONFIG.font:width(dep.symbol, size)
-                    CONFIG.font:write(x + 50 - symbol_width/2, y+symbol_margin_top, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
+                    CONFIG.font:write(x + small_box_width/2 - symbol_width/2, y+symbol_margin_top, dep.symbol, size, dep.font_r, dep.font_g, dep.font_b,1)
                 end
                 x = x + 110
 
@@ -207,9 +212,10 @@ function node.render()
 
                 -- destination and follow-up information
                 text_y = y + (margin_bottom * 0.5)
-                CONFIG.font:write(x, text_y, dep.direction, text_upper_size, stop_r,stop_g,stop_b,1)
+                text_x = x + small_box_width + w_width
+                CONFIG.font:write(text_x, text_y, dep.direction, text_upper_size, stop_r,stop_g,stop_b,1)
                 text_y = text_y + text_upper_size
-                CONFIG.font:write(x, text_y, platform .. " " .. append, text_lower_size, 1,1,1,1)
+                CONFIG.font:write(text_x, text_y, platform .. " " .. append, text_lower_size, 1,1,1,1)
             end
 
             y = y + symbol_height + margin_bottom
